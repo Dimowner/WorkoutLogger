@@ -1,0 +1,161 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+	compileSdkVersion rootProject.ext.compileSdkVersion
+	buildToolsVersion rootProject.ext.buildToolsVersion
+
+	defaultConfig {
+		applicationId "ua.com.sofon.workoutlogger"
+		minSdkVersion rootProject.ext.minSdkVersion
+		targetSdkVersion rootProject.ext.targetSdkVersion
+		versionCode generateVersionCode()
+		versionName generateVersionName()
+	}
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+		}
+	}
+	lintOptions {
+		abortOnError false
+	}
+	sourceSets {
+		main.java.srcDirs += 'src/main/kotlin'
+	}
+
+//	compileOptions {
+//		sourceCompatibility JavaVersion.VERSION_1_8
+//		targetCompatibility JavaVersion.VERSION_1_8
+//	}
+}
+
+dependencies {
+	compile fileTree(include: ['*.jar'], dir: 'libs')
+	compile "com.android.support:design:$rootProject.supportLibraryVersion"
+	compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+	compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+	compile "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
+	compile "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
+	compile "com.google.guava:guava:$rootProject.guavaVersion"
+	testCompile "junit:junit:$rootProject.junitVersion"
+	compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+
+	//Timber
+	compile "com.jakewharton.timber:timber:$rootProject.timberVersion"
+
+	//Butter Knife
+	compile "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
+	annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterKnifeVersion"
+
+	// Testing-only dependencies
+	// Force usage of support annotations in the test app, since it is internally used by the runner module.
+	androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
+	androidTestCompile "com.android.support.test:runner:$rootProject.supportTestVersion"
+	androidTestCompile "com.android.support.test:rules:$rootProject.supportTestVersion"
+}
+
+buildscript {
+	ext.kotlin_version = '1.1.0'
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+/**
+ * Генерация имя версии приложения с данным считаными с local.properties
+ * @return Имя версии приложения
+ */
+def generateVersionName() {
+	def file = new File("local.properties")
+	def props = new Properties()
+	props.load(new FileInputStream(file));
+
+	if (props.version != null && props.date != null && props.revision != null) {
+//		return version.toString() + "." + props.revision + " (" + props.date + ")"
+		return version.toString() + " (" + props.date + ")"
+	} else {
+		if (props.version != null && props.date != null) {
+			return version.toString() + " (" + props.date + ")"
+		} else {
+			if (version != null) {
+				return version.toString()
+			} else {
+				return "unknown"
+			}
+		}
+	}
+}
+
+/**
+ * Сгенерировать код версии сборки проекта.
+ * @return Код версии сборки проекта.
+ */
+def generateVersionCode() {
+	//The rules is as follows:
+	//-SNAPSHOT counts as 0
+	//-RC* counts as the RC number, i.e. 1 to 98
+	//final release counts as 99.
+	//Thus you can only have 98 Release Candidates, which ought to be enough for everyone
+
+	def candidate = "99"
+	def (major, minor, patch) = version.toLowerCase().replaceAll('-', '').tokenize('.')
+	if (patch.endsWith("snapshot")) {
+		candidate = "0"
+		patch = patch.replaceAll("[^0-9]", "")
+	} else {
+		def rc
+		(patch, rc) = patch.tokenize("rc")
+		if (rc) {
+			candidate = rc
+		}
+	}
+
+	(major, minor, patch, candidate) = [major, minor, patch, candidate].collect {
+		it.toInteger()
+	}
+
+	writeSvnRevIntoLocalProperties(new File("local.properties"))
+	return (major * 1000000) + (minor * 10000) + (patch * 100) + candidate;
+}
+
+/**
+ * Записать праметры в файл настроек.
+ * Параметры:
+ * 	version - название версии сборки (задано в файле gradle.properties)
+ * 	revision - номер ревизи SVN, последней модификации проекта.
+ * 	date - дата сборки проекта.
+ * @param file Файл настроек, в который будут записаны параметры.
+ */
+def writeSvnRevIntoLocalProperties(File file) {
+//	Runtime rt = Runtime.getRuntime();
+//	Process pr = rt.exec("svnversion");
+//	String lastRev = pr.getText();
+//	if (lastRev.contains(":")) {
+//		lastRev = lastRev.substring(0, lastRev.indexOf(":"));
+//		lastRev.replace("M", "");
+//		lastRev.replace("S", "");
+//		lastRev.replace("P", "");
+//	}
+//	lastRev = lastRev.substring(lastRev.indexOf("Last Changed Rev: ") + 18,
+//			lastRev.indexOf("Last Changed Date:") - 1)
+//	println "Last Changed Rev: " + lastRev
+
+	def props = new Properties()
+	props.load(new FileInputStream(file));
+	props.version = version
+//	props.revision = lastRev
+	props.date = Date.newInstance().format('dd.MM.yyyy')
+	file.withWriter {
+		props.store(it, null)
+	}
+}

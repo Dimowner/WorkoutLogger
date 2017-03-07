@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<group
+			android:id="@+id/nav_view_primary"
+			android:checkableBehavior="single">
+		<item
+				android:id="@+id/nav_home"
+				android:icon="@drawable/home_outline"
+				android:title="@string/navdrawer_item_home"/>
+		<item
+				android:id="@+id/nav_history"
+				android:icon="@drawable/checkbox_multiple_marked_circle_outline"
+				android:title="@string/navdrawer_item_history"/>
+		<item
+				android:id="@+id/nav_workouts"
+				android:icon="@drawable/sword"
+				android:title="@string/navdrawer_item_workouts"/>
+		<item
+				android:id="@+id/nav_exercises"
+				android:icon="@drawable/dumbbell"
+				android:title="@string/navdrawer_item_exercises"/>
+		<item
+				android:id="@+id/nav_statistics"
+				android:icon="@drawable/chart_bubble"
+				android:title="@string/navdrawer_item_statistics"/>
+		<item
+				android:id="@+id/nav_measurements"
+				android:icon="@drawable/scale_bathroom"
+				android:title="@string/navdrawer_item_measurements"/>
+	</group>
+
+	<group android:id="@+id/nav_view_ternary"
+			 android:checkableBehavior="single">
+		<item
+				android:id="@+id/nav_settings"
+				android:icon="@drawable/wrench"
+				android:title="@string/navdrawer_item_settings"/>
+	</group>
+</menu>
