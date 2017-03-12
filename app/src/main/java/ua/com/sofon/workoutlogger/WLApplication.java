@@ -17,8 +17,13 @@
 package ua.com.sofon.workoutlogger;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.annotation.NonNull;
 
 import timber.log.Timber;
+import ua.com.sofon.workoutlogger.dagger.application.AppComponent;
+import ua.com.sofon.workoutlogger.dagger.application.AppModule;
+import ua.com.sofon.workoutlogger.dagger.application.DaggerAppComponent;
 
 /**
  * Created on 07.03.2017.
@@ -26,9 +31,16 @@ import timber.log.Timber;
  */
 public class WLApplication extends Application {
 
+	// dagger2 appComponent
+	@SuppressWarnings("NullableProblems")
+	@NonNull
+	private AppComponent appComponent;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
+		appComponent = prepareAppComponent().build();
 
 		if (BuildConfig.DEBUG) {
 			Timber.plant(new Timber.DebugTree() {
@@ -42,5 +54,21 @@ public class WLApplication extends Application {
 			//Crashlytics.start() //Init crash reporting lib
 			Timber.plant(new ReleaseTree());
 		}
+	}
+
+	@NonNull
+	public static WLApplication get(@NonNull Context context) {
+		return (WLApplication) context.getApplicationContext();
+	}
+
+	@NonNull
+	private DaggerAppComponent.Builder prepareAppComponent() {
+		return DaggerAppComponent.builder()
+				.appModule(new AppModule(this));
+	}
+
+	@NonNull
+	public AppComponent applicationComponent() {
+		return appComponent;
 	}
 }

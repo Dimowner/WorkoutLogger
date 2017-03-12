@@ -18,25 +18,122 @@ package ua.com.sofon.workoutlogger.ui.exercises.views;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ua.com.sofon.workoutlogger.R;
-import ua.com.sofon.workoutlogger.ui.BaseActivity;
+import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity;
 
 /**
  * Created on 07.03.2017.
- *
  * @author Dimowner
  */
 public class ExercisesActivity extends BaseActivity {
+
+	private AllExercisesFragment exercisesFragment;
+	private FevExercisesFragment fevExercisesFragment;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_exercises);
+
+		if (savedInstanceState == null) {
+			exercisesFragment = new AllExercisesFragment();
+			fevExercisesFragment = new FevExercisesFragment();
+			initViewpager();
+		}
 	}
 
 	@Override
 	protected int getSelfNavDrawerItem() {
 		return NAVDRAWER_ITEM_EXERCISES;
+	}
+
+	private void initViewpager() {
+		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+		if (viewPager != null) {
+			CustomTabsAdapter adapter = new CustomTabsAdapter(getSupportFragmentManager());
+			adapter.addFragment(exercisesFragment, "All exercises");
+			adapter.addFragment(fevExercisesFragment, "Favorites");
+			viewPager.setAdapter(adapter);
+			TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+			if (tabLayout != null) {
+				tabLayout.setupWithViewPager(viewPager);
+			}
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("exercises_fragment_tag", exercisesFragment.getTag());
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		exercisesFragment = (AllExercisesFragment) getSupportFragmentManager()
+				.findFragmentByTag(savedInstanceState.getString("exercises_fragment_tag"));
+		initViewpager();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.exercises_menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.action_add_exercise:
+				Toast.makeText(this, "Add exercise action performed", Toast.LENGTH_LONG).show();
+				break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * Pager adapter implementation with fragments
+	 */
+	private static class CustomTabsAdapter extends FragmentPagerAdapter {
+
+		CustomTabsAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		void addFragment(Fragment fragment, String title) {
+			mFragments.add(fragment);
+			mFragmentTitles.add(title);
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			return mFragments.get(position);
+		}
+
+		@Override
+		public int getCount() {
+			return mFragments.size();
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			return mFragmentTitles.get(position);
+		}
+
+
+		private final List<Fragment> mFragments = new ArrayList<>();
+		private final List<String> mFragmentTitles = new ArrayList<>();
 	}
 }

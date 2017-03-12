@@ -35,7 +35,7 @@
 
 	<string name="list_item_cont_desc">Item menu</string>
 
-	<string name="menu_item_exer_add">Add exercise</string>
+	<string name="menu_item_exe_add">Add exercise</string>
 	<string name="menu_item_workout_add">Add workout</string>
 	<string name="menu_item_add">Add</string>
 	<string name="menu_item_accept">Accept</string>

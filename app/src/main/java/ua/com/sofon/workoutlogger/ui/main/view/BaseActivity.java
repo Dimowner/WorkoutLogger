@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui;
+package ua.com.sofon.workoutlogger.ui.main.view;
 
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -28,15 +29,20 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 
+import javax.inject.Inject;
+
 import ua.com.sofon.workoutlogger.R;
+import ua.com.sofon.workoutlogger.WLApplication;
+import ua.com.sofon.workoutlogger.dagger.main.MainModule;
 import ua.com.sofon.workoutlogger.ui.exercises.views.ExercisesActivity;
 import ua.com.sofon.workoutlogger.ui.home.views.HomeActivity;
+import ua.com.sofon.workoutlogger.ui.main.presenter.IMainPresenter;
 
 /**
  * Base activity with base functionality and drawer layout.
  * @author Dimowner
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements IMainView{
 
 	// symbols for navdrawer items (indices must correspond to array below). This is
 	// not a list of items that are necessarily *present* in the Nav Drawer; rather,
@@ -58,6 +64,14 @@ public class BaseActivity extends AppCompatActivity {
 	protected NavigationView mNavigationView;
 	protected ActionBarDrawerToggle mDrawerToggle;
 
+	@Inject
+	IMainPresenter iMainPresenter;
+
+	@Override
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		WLApplication.get(getApplicationContext()).applicationComponent().plus(new MainModule()).inject(this);
+	}
 
 	/**
 	 * When using the ActionBarDrawerToggle, you must call it during
@@ -67,6 +81,13 @@ public class BaseActivity extends AppCompatActivity {
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		setupNavDrawer();
+		iMainPresenter.bindView(this);
+	}
+
+	@Override
+	protected void onDestroy() {
+		iMainPresenter.unbindView();
+		super.onDestroy();
 	}
 
 	@Override
@@ -165,19 +186,16 @@ public class BaseActivity extends AppCompatActivity {
 	}
 
 	private void goToNavDrawerItem(int itemID) {
-
 		switch (itemID) {
 			case NAVDRAWER_ITEM_HOME:
-				startActivity(new Intent(this, HomeActivity.class));
-				finish();
+				iMainPresenter.clickToHomeMenuItem();
 				break;
 			case NAVDRAWER_ITEM_HISTORY:
 				break;
 			case NAVDRAWER_ITEM_WORKOUTS:
 				break;
 			case NAVDRAWER_ITEM_EXERCISES:
-				startActivity(new Intent(this, ExercisesActivity.class));
-				finish();
+				iMainPresenter.clickToExercisesMenuItem();
 				break;
 			case NAVDRAWER_ITEM_STATISTICS:
 				break;
@@ -208,5 +226,15 @@ public class BaseActivity extends AppCompatActivity {
 		return mActionBarToolbar;
 	}
 
-}
+	@Override
+	public void startHomeActivity() {
+		startActivity(new Intent(this, HomeActivity.class));
+		finish();
+	}
 
+	@Override
+	public void startExercisesActivity() {
+		startActivity(new Intent(this, ExercisesActivity.class));
+		finish();
+	}
+}

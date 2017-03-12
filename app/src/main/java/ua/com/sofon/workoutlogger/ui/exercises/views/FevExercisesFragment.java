@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.home.views
+package ua.com.sofon.workoutlogger.ui.exercises.views;
 
-import android.os.Bundle
-import ua.com.sofon.workoutlogger.R
-import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import ua.com.sofon.workoutlogger.R;
 
 /**
- * Start application activity.
+ * Created on 08.03.2017.
  * @author Dimowner
  */
-class HomeActivity : BaseActivity() {
+public class FevExercisesFragment extends Fragment {
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		setTheme(R.style.AppTheme)
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_home)
-	}
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+									 Bundle savedInstanceState) {
+		ViewGroup rootView = (ViewGroup) inflater.inflate(
+				R.layout.exercises_fragment, container, false);
 
-	override fun getSelfNavDrawerItem(): Int {
-		return NAVDRAWER_ITEM_HOME
+		return rootView;
 	}
 }

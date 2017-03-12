@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.home.views
+package ua.com.sofon.workoutlogger.ui.exercises.views;
 
-import android.os.Bundle
-import ua.com.sofon.workoutlogger.R
-import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity
+import java.util.List;
+
+import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseModel;
 
 /**
- * Start application activity.
+ * Created on 08.03.2017.
  * @author Dimowner
  */
-class HomeActivity : BaseActivity() {
+public interface IAllExercisesView {
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		setTheme(R.style.AppTheme)
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_home)
-	}
+	void showProgress();
+	void hideProgress();
 
-	override fun getSelfNavDrawerItem(): Int {
-		return NAVDRAWER_ITEM_HOME
-	}
+	void showLoadError(String error);
+	void showAllExercises(List<ExerciseModel> list);
+	void switchToFevExercises();
+	void expandGroup();
+	void collapseGroup();
+//	void addToFavorites();
+//	void removeFromFavorites();
+//	void openExerciseDetails();
+//	void searchExrcise(String text);
+//	void addNewExercise();
 }

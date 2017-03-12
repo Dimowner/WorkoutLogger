@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.home.views
+package ua.com.sofon.workoutlogger.dagger.application;
 
-import android.os.Bundle
-import ua.com.sofon.workoutlogger.R
-import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity
+import javax.inject.Singleton;
+
+import dagger.Component;
+import ua.com.sofon.workoutlogger.dagger.exercises.ExercisesComponent;
+import ua.com.sofon.workoutlogger.dagger.exercises.ExercisesModule;
+import ua.com.sofon.workoutlogger.dagger.main.MainComponent;
+import ua.com.sofon.workoutlogger.dagger.main.MainModule;
 
 /**
- * Start application activity.
+ * Created on 08.03.2017.
  * @author Dimowner
  */
-class HomeActivity : BaseActivity() {
+@Component(modules = {AppModule.class})
+@Singleton
+public interface AppComponent {
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		setTheme(R.style.AppTheme)
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_home)
-	}
-
-	override fun getSelfNavDrawerItem(): Int {
-		return NAVDRAWER_ITEM_HOME
-	}
+	MainComponent plus(MainModule mainModule);
+	ExercisesComponent plus(ExercisesModule exerciseModule);
 }

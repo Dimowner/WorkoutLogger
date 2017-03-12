@@ -7,6 +7,8 @@
 	<color name="colorAccent">#FFCA28</color>
 	<color name="colorLink">#1E88E5</color>
 
+	<color name="background_default">#FDFDFE</color>
+
 	<color name="md_grey_700">#616161</color>
 
 	<color name="text_primary_dark">#de000000</color> <!-- 87% -->
@@ -14,5 +16,8 @@
 	<color name="text_tertiary_dark">#61000000</color> <!-- 38% -->
 	<color name="text_primary_light">#ffffffff</color>
 	<color name="text_secondary_light">#b3ffffff</color> <!-- 70% -->
-	<color name="text_disabled_light">#4dffffff</color> <!-- 30% -->s
+	<color name="text_disabled_light">#4dffffff</color> <!-- 30% -->
+
+	<color name="list_divider">#E6F5F3</color>
+
 </resources>

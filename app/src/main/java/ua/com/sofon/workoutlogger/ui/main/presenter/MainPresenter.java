@@ -14,25 +14,35 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.home.views
+package ua.com.sofon.workoutlogger.ui.main.presenter;
 
-import android.os.Bundle
-import ua.com.sofon.workoutlogger.R
-import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity
+import ua.com.sofon.workoutlogger.ui.main.view.IMainView;
 
 /**
- * Start application activity.
+ * Created on 08.03.2017.
  * @author Dimowner
  */
-class HomeActivity : BaseActivity() {
+public class MainPresenter implements IMainPresenter {
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		setTheme(R.style.AppTheme)
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_home)
+	private IMainView iMainView;
+
+	@Override
+	public void bindView(IMainView iMainView) {
+		this.iMainView = iMainView;
 	}
 
-	override fun getSelfNavDrawerItem(): Int {
-		return NAVDRAWER_ITEM_HOME
+	@Override
+	public void unbindView() {
+		iMainView = null;
+	}
+
+	@Override
+	public void clickToHomeMenuItem() {
+		iMainView.startHomeActivity();
+	}
+
+	@Override
+	public void clickToExercisesMenuItem() {
+		iMainView.startExercisesActivity();
 	}
 }

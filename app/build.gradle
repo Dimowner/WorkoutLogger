@@ -43,6 +43,17 @@ dependencies {
 	testCompile "junit:junit:$rootProject.junitVersion"
 	compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
 
+	// dagger2
+	compile "com.google.dagger:dagger:$rootProject.dagger2Version"
+	provided "com.google.dagger:dagger-compiler:$rootProject.dagger2Version"
+	provided 'org.glassfish:javax.annotation:10.0-b28'
+
+	// Rx
+	compile 'io.reactivex:rxandroid:1.1.0' //TODO: update to 2.0.1
+	compile 'io.reactivex:rxjava:1.1.0'
+
+	compile 'com.github.bumptech.glide:glide:3.7.0'
+
 	//Timber
 	compile "com.jakewharton.timber:timber:$rootProject.timberVersion"
 

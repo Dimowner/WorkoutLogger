@@ -1,22 +1,25 @@
 <resources>
 
-	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-		<item name="colorPrimary">@color/colorPrimary</item>
-		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-		<item name="colorAccent">@color/colorAccent</item>
+	<!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
+		<!--<item name="colorPrimary">@color/colorPrimary</item>-->
+		<!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+		<!--<item name="colorAccent">@color/colorAccent</item>-->
 
-		<item name="colorControlHighlight">#d1f1ef</item>
+		<!--<item name="android:windowBackground">@color/background_default</item>-->
+		<!--<item name="android:textColor">@color/text_primary_dark</item>-->
 
-		<item name="windowActionBar">false</item>
-		<item name="windowNoTitle">true</item>
+		<!--<item name="colorControlHighlight">#d1f1ef</item>-->
 
-		<item name="actionBarInsetStart">@dimen/keyline_2</item>
-		<item name="spinnerBarInsetStart">@dimen/keyline_2_minus_16dp</item>
+		<!--<item name="windowActionBar">false</item>-->
+		<!--<item name="windowNoTitle">true</item>-->
 
-		<item name="android:textColorLink">@color/colorLink</item>
+		<!--<item name="actionBarInsetStart">@dimen/keyline_2</item>-->
+		<!--<item name="spinnerBarInsetStart">@dimen/keyline_2_minus_16dp</item>-->
 
-		<item name="android:windowTranslucentStatus">true</item>
-		<item name="android:windowTranslucentNavigation">true</item>
-	</style>
+		<!--<item name="android:textColorLink">@color/colorLink</item>-->
+
+		<!--<item name="android:windowTranslucentStatus">true</item>-->
+		<!--<item name="android:windowTranslucentNavigation">true</item>-->
+	<!--</style>-->
 
 </resources>
