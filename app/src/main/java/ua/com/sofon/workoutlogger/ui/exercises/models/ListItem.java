@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.exercises.views;
+package ua.com.sofon.workoutlogger.ui.exercises.models;
 
 import android.support.annotation.NonNull;
 
@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class ListItem {
 
-	private int id;
+	private long id;
 	private int type;
 	private String name;
 	private String imagePath;
@@ -37,7 +37,7 @@ public class ListItem {
 
 	private List<ListItem> children;
 
-	public ListItem(int id, int type, @NonNull String name, String imagePath, boolean isFavorite) {
+	public ListItem(long id, int type, @NonNull String name, String imagePath, boolean isFavorite) {
 		this.id = id;
 		this.type = type;
 		this.name = name;
@@ -47,7 +47,7 @@ public class ListItem {
 		this.children = new ArrayList<>();
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

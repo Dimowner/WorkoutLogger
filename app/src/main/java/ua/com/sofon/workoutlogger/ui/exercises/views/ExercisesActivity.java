@@ -16,6 +16,7 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.views;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -25,7 +26,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +39,10 @@ import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity;
  */
 public class ExercisesActivity extends BaseActivity {
 
-	private AllExercisesFragment exercisesFragment;
-	private FevExercisesFragment fevExercisesFragment;
+	public static final String EXTRAS_KEY_EXERCISE_ID = "exercise_id";
+
+	private ExercisesFragment exercisesFragment;
+	private ExercisesFragment fevExercisesFragment;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,8 +50,8 @@ public class ExercisesActivity extends BaseActivity {
 		setContentView(R.layout.activity_exercises);
 
 		if (savedInstanceState == null) {
-			exercisesFragment = new AllExercisesFragment();
-			fevExercisesFragment = new FevExercisesFragment();
+			exercisesFragment = ExercisesFragment.newInstance(ExercisesFragment.VIEW_TYPE_ALL_EXERCISES);
+			fevExercisesFragment = ExercisesFragment.newInstance(ExercisesFragment.VIEW_TYPE_FEV_EXERCISES);
 			initViewpager();
 		}
 	}
@@ -82,7 +84,7 @@ public class ExercisesActivity extends BaseActivity {
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		exercisesFragment = (AllExercisesFragment) getSupportFragmentManager()
+		exercisesFragment = (ExercisesFragment) getSupportFragmentManager()
 				.findFragmentByTag(savedInstanceState.getString("exercises_fragment_tag"));
 		initViewpager();
 	}
@@ -97,7 +99,7 @@ public class ExercisesActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_add_exercise:
-				Toast.makeText(this, "Add exercise action performed", Toast.LENGTH_LONG).show();
+				startActivity(new Intent(getApplicationContext(), ExerciseEditActivity.class));
 				break;
 		}
 		return super.onOptionsItemSelected(item);

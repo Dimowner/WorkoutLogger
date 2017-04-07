@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.dagger.exercises;
+package ua.com.sofon.workoutlogger.business.exercises;
 
-import dagger.Subcomponent;
-import ua.com.sofon.workoutlogger.ui.exercises.views.ExercisesFragment;
+import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 
 /**
- * Created on 08.03.2017.
+ * Created on 02.04.2017.
  * @author Dimowner
  */
-@Subcomponent(modules = {ExercisesModule.class})
-@ExercisesScope
-public interface ExercisesComponent {
+public interface IExerciseEditInteractor {
 
-	void injectAllExes(ExercisesFragment allExercisesFragment);
+	ExerciseDataModel loadData(long id);
+//	long saveData(ExerciseDataModel data);
+
+	boolean validateData(ExerciseDataModel data);
+
+	long addExercise(ExerciseDataModel data);
+	void updateExercise(ExerciseDataModel data);
 }

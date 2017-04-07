@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 
 import rx.subscriptions.CompositeSubscription;
 import ua.com.sofon.workoutlogger.business.exercises.IExercisesInteractor;
-import ua.com.sofon.workoutlogger.ui.exercises.views.IAllExercisesView;
+import ua.com.sofon.workoutlogger.ui.exercises.views.IExercisesView;
 
 /**
  * Created on 08.03.2017.
@@ -30,7 +30,7 @@ public class ExercisesPresenter implements IExercisesPresenter {
 
 	private IExercisesInteractor iExercisesInteractor;
 
-	private IAllExercisesView iAllExercisesView;
+	private IExercisesView iAllExercisesView;
 
 	private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -40,7 +40,7 @@ public class ExercisesPresenter implements IExercisesPresenter {
 	}
 
 	@Override
-	public void bindView(@NonNull IAllExercisesView iAllExercisesView) {
+	public void bindView(@NonNull IExercisesView iAllExercisesView) {
 		this.iAllExercisesView = iAllExercisesView;
 	}
 
@@ -52,8 +52,20 @@ public class ExercisesPresenter implements IExercisesPresenter {
 	@Override
 	public void loadAllExercises() {
 		iAllExercisesView.showProgress();
-		iAllExercisesView.showAllExercises(iExercisesInteractor.getAllExercises());
+		iAllExercisesView.showExercises(iExercisesInteractor.getAllExercises());
 //		iAllExercisesView.buildList(iExercisesInteractor.getAllExercises())
 
+	}
+
+	@Override
+	public void loadFavoritesExercises() {
+		iAllExercisesView.showProgress();
+		iAllExercisesView.showExercises(iExercisesInteractor.getFavoritesExercises());
+	}
+
+	@Override
+	public boolean reverseFavorite(int id) {
+//		TODO: update view here
+		return iExercisesInteractor.reverseFavorite(id);
 	}
 }

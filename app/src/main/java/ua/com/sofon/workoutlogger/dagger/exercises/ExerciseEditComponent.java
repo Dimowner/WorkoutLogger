@@ -14,30 +14,17 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.exercises.presenter;
+package ua.com.sofon.workoutlogger.dagger.exercises;
 
-import android.support.annotation.NonNull;
-
-import ua.com.sofon.workoutlogger.ui.exercises.views.IAllExercisesView;
+import dagger.Subcomponent;
+import ua.com.sofon.workoutlogger.ui.exercises.views.ExerciseEditActivity;
 
 /**
- * Created on 08.03.2017.
+ * Created on 03.04.2017.
  * @author Dimowner
  */
-public class FakeExercisesPresenter implements IExercisesPresenter {
-
-	@Override
-	public void bindView(@NonNull IAllExercisesView iAllExercisesView) {
-
-	}
-
-	@Override
-	public void unbindView() {
-
-	}
-
-	@Override
-	public void loadAllExercises() {
-
-	}
+@Subcomponent(modules = {ExerciseEditModule.class})
+@ExerciseEditScope
+public interface  ExerciseEditComponent {
+	void injectExeEdit(ExerciseEditActivity exerciseEditActivity);
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.exercises.models;
+package ua.com.sofon.workoutlogger.data.network.models;
 
 import android.support.annotation.NonNull;
 
@@ -24,20 +24,23 @@ import android.support.annotation.NonNull;
  */
 public class ExerciseModel {
 
-	protected int id;
+
+	protected long id;
 	protected int[] groups;
 	protected String name;
 	protected String description;
+	protected boolean isFavorite;
 //	TODO: Add photos
 
-	public ExerciseModel(int id, @NonNull int[] groups, @NonNull String name, @NonNull String description) {
+	public ExerciseModel(long id, @NonNull int[] groups, @NonNull String name, @NonNull String description, boolean isFavorite) {
 		this.id = id;
 		this.groups = groups;
 		this.name = name;
 		this.description = description;
+		this.isFavorite = isFavorite;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -51,6 +54,10 @@ public class ExerciseModel {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public boolean isFavorite() {
+		return isFavorite;
 	}
 
 	@Override

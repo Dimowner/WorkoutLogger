@@ -20,6 +20,8 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import timber.log.Timber;
 import ua.com.sofon.workoutlogger.dagger.application.AppComponent;
 import ua.com.sofon.workoutlogger.dagger.application.AppModule;
@@ -54,6 +56,12 @@ public class WLApplication extends Application {
 			//Crashlytics.start() //Init crash reporting lib
 			Timber.plant(new ReleaseTree());
 		}
+
+		//------ init the db ----------------
+		Realm.init(this);
+		RealmConfiguration config = new RealmConfiguration.Builder()
+				.deleteRealmIfMigrationNeeded().name("wl_db.realm").build();
+		Realm.setDefaultConfiguration(config);
 	}
 
 	@NonNull

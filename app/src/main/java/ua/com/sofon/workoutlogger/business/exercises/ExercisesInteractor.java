@@ -16,10 +16,12 @@
 
 package ua.com.sofon.workoutlogger.business.exercises;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.IExercisesRepository;
-import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseModel;
+import ua.com.sofon.workoutlogger.ui.exercises.models.ListItem;
 
 /**
  * Created on 08.03.2017.
@@ -34,7 +36,33 @@ public class ExercisesInteractor implements IExercisesInteractor {
 	}
 
 	@Override
-	public List<ExerciseModel> getAllExercises() {
-		return iExercisesRepository.loadAllExercises();
+	public List<ListItem> getAllExercises() {
+
+		List<ExerciseModel> data = iExercisesRepository.loadAllExercises();
+		List<ListItem> listData = new ArrayList<>();
+
+		for (ExerciseModel e : data) {
+			ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite());
+			listData.add(item);
+		}
+		return listData;
+	}
+
+	@Override
+	public List<ListItem> getFavoritesExercises() {
+
+		List<ExerciseModel> data = iExercisesRepository.loadFavoritesExercises();
+		List<ListItem> listData = new ArrayList<>();
+
+		for (ExerciseModel e : data) {
+			ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite());
+			listData.add(item);
+		}
+		return listData;
+	}
+
+	@Override
+	public boolean reverseFavorite(long id) {
+		return iExercisesRepository.reverseFavorite(id);
 	}
 }

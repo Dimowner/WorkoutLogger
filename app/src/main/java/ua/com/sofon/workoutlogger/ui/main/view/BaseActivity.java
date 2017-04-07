@@ -35,6 +35,7 @@ import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.WLApplication;
 import ua.com.sofon.workoutlogger.dagger.main.MainModule;
 import ua.com.sofon.workoutlogger.ui.exercises.views.ExercisesActivity;
+//import ua.com.sofon.workoutlogger.ui.home.views.HomeActivity;
 import ua.com.sofon.workoutlogger.ui.home.views.HomeActivity;
 import ua.com.sofon.workoutlogger.ui.main.presenter.IMainPresenter;
 

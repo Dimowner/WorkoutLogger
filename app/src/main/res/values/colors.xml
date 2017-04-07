@@ -10,6 +10,7 @@
 	<color name="background_default">#FDFDFE</color>
 
 	<color name="md_grey_700">#616161</color>
+	<color name="colorPrimaryLight">#546E7A</color>
 
 	<color name="text_primary_dark">#de000000</color> <!-- 87% -->
 	<color name="text_secondary_dark">#8a000000</color> <!-- 54% -->
@@ -19,5 +20,10 @@
 	<color name="text_disabled_light">#4dffffff</color> <!-- 30% -->
 
 	<color name="list_divider">#E6F5F3</color>
+	<color name="light_cyan">#E6F5F3</color>
+
+	<!--//TODO: fix this colors-->
+	<color name="md_grey_300">#e0e0e0</color>
+	<color name="md_grey_400">#bdbdbd</color>
 
 </resources>

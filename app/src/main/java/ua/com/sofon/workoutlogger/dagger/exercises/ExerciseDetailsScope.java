@@ -16,16 +16,16 @@
 
 package ua.com.sofon.workoutlogger.dagger.exercises;
 
-import dagger.Subcomponent;
-import ua.com.sofon.workoutlogger.ui.exercises.views.ExercisesFragment;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import javax.inject.Scope;
 
 /**
- * Created on 08.03.2017.
+ * Created on 04.04.2017.
  * @author Dimowner
  */
-@Subcomponent(modules = {ExercisesModule.class})
-@ExercisesScope
-public interface ExercisesComponent {
-
-	void injectAllExes(ExercisesFragment allExercisesFragment);
+@Scope
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ExerciseDetailsScope {
 }

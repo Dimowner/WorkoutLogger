@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.dagger.exercises;
-
-import dagger.Subcomponent;
-import ua.com.sofon.workoutlogger.ui.exercises.views.ExercisesFragment;
+package ua.com.sofon.workoutlogger.ui.exercises.views;
 
 /**
- * Created on 08.03.2017.
+ * Created on 04.04.2017.
  * @author Dimowner
  */
-@Subcomponent(modules = {ExercisesModule.class})
-@ExercisesScope
-public interface ExercisesComponent {
+public interface IExerciseDetailsView {
 
-	void injectAllExes(ExercisesFragment allExercisesFragment);
+	void showProgress();
+	void hideProgress();
+	void setImage(String path);
+	void setName(String name);
+	void selectGroup(String group);
+	void setDescription(String description);
+
+	void deleteExerciseClicked();
 }

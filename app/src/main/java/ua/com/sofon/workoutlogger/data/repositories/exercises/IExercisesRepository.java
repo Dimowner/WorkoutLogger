@@ -18,7 +18,7 @@ package ua.com.sofon.workoutlogger.data.repositories.exercises;
 
 import java.util.List;
 
-import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseModel;
+import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 
 /**
  * Created on 08.03.2017.
@@ -28,4 +28,11 @@ public interface IExercisesRepository {
 
 //	Single<ExerciseModel>
 	List<ExerciseModel> loadAllExercises();
+	List<ExerciseModel> loadFavoritesExercises();
+	ExerciseModel loadExercise(long id);
+	void updateExercise(ExerciseModel data);
+	long addExercise(ExerciseModel data);
+	void deleteExercise(long id);
+
+	boolean reverseFavorite(long id);
 }

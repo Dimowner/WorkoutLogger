@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.exercises.views;
+package ua.com.sofon.workoutlogger.dagger.exercises;
 
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseModel;
+import javax.inject.Scope;
 
 /**
- * Created on 08.03.2017.
+ * Created on 03.04.2017.
  * @author Dimowner
  */
-public interface IAllExercisesView {
-
-	void showProgress();
-	void hideProgress();
-
-	void showLoadError(String error);
-	void showAllExercises(List<ExerciseModel> list);
-	void switchToFevExercises();
-	void expandGroup();
-	void collapseGroup();
-//	void addToFavorites();
-//	void removeFromFavorites();
-//	void openExerciseDetails();
-//	void searchExrcise(String text);
-//	void addNewExercise();
+@Scope
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ExerciseEditScope {
 }

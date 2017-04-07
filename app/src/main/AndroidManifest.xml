@@ -28,5 +28,14 @@
 		<activity
 				android:name=".ui.exercises.views.ExercisesActivity"
 				android:label="@string/title_exercises"/>
+		<!--TODO: fix title-->
+		<activity
+				android:name=".ui.exercises.views.ExerciseDetailsActivity"
+				android:label="Exercise Details"/>
+		<!--TODO: fix title-->
+		<activity
+				android:name=".ui.exercises.views.ExerciseEditActivity"
+				android:label="Edit exercise"/>
+
 	</application>
 </manifest>

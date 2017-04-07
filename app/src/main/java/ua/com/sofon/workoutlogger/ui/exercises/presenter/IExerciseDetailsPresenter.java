@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.exercises.views;
+package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.annotation.NonNull;
 
-import ua.com.sofon.workoutlogger.R;
+import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
+import ua.com.sofon.workoutlogger.ui.exercises.views.IExerciseDetailsView;
 
 /**
- * Created on 08.03.2017.
+ * Created on 04.04.2017.
  * @author Dimowner
  */
-public class FevExercisesFragment extends Fragment {
+public interface IExerciseDetailsPresenter {
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-									 Bundle savedInstanceState) {
-		ViewGroup rootView = (ViewGroup) inflater.inflate(
-				R.layout.exercises_fragment, container, false);
+	void bindView(@NonNull IExerciseDetailsView iExerciseEditView);
+	void unbindView();
 
-		return rootView;
-	}
+	void clickShowYoutubeVideo();
+	void reverseFavorite(long id);
+	void clickEditExercise(ExerciseDataModel data);
+	void clickDeleteExercise(long id);
+	void loadExerciseData(long id);
 }

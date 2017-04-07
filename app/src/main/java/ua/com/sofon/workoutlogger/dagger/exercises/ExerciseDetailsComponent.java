@@ -17,15 +17,14 @@
 package ua.com.sofon.workoutlogger.dagger.exercises;
 
 import dagger.Subcomponent;
-import ua.com.sofon.workoutlogger.ui.exercises.views.ExercisesFragment;
+import ua.com.sofon.workoutlogger.ui.exercises.views.ExerciseDetailsActivity;
 
 /**
- * Created on 08.03.2017.
+ * Created on 04.04.2017.
  * @author Dimowner
  */
-@Subcomponent(modules = {ExercisesModule.class})
-@ExercisesScope
-public interface ExercisesComponent {
-
-	void injectAllExes(ExercisesFragment allExercisesFragment);
+@Subcomponent(modules = {ExerciseDetailsModule.class})
+@ExerciseDetailsScope
+public interface ExerciseDetailsComponent {
+	void injectExeDetails(ExerciseDetailsActivity exerciseDetailsActivity);
 }

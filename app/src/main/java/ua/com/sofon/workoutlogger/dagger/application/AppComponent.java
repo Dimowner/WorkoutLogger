@@ -19,6 +19,10 @@ package ua.com.sofon.workoutlogger.dagger.application;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import ua.com.sofon.workoutlogger.dagger.exercises.ExerciseDetailsModule;
+import ua.com.sofon.workoutlogger.dagger.exercises.ExerciseDetailsComponent;
+import ua.com.sofon.workoutlogger.dagger.exercises.ExerciseEditComponent;
+import ua.com.sofon.workoutlogger.dagger.exercises.ExerciseEditModule;
 import ua.com.sofon.workoutlogger.dagger.exercises.ExercisesComponent;
 import ua.com.sofon.workoutlogger.dagger.exercises.ExercisesModule;
 import ua.com.sofon.workoutlogger.dagger.main.MainComponent;
@@ -34,4 +38,6 @@ public interface AppComponent {
 
 	MainComponent plus(MainModule mainModule);
 	ExercisesComponent plus(ExercisesModule exerciseModule);
+	ExerciseEditComponent plus(ExerciseEditModule exerciseEditModule);
+	ExerciseDetailsComponent plus(ExerciseDetailsModule exerciseDetailsModule);
 }

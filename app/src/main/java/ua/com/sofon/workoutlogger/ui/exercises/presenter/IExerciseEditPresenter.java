@@ -18,19 +18,25 @@ package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
 
-import ua.com.sofon.workoutlogger.ui.exercises.views.IExercisesView;
+import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
+import ua.com.sofon.workoutlogger.ui.exercises.views.IExerciseEditView;
 
 /**
- * Created on 08.03.2017.
+ * Created on 02.04.2017.
  * @author Dimowner
  */
-public interface IExercisesPresenter {
+public interface IExerciseEditPresenter {
 
-	void bindView(@NonNull IExercisesView iAllExercisesView);
+	void bindView(@NonNull IExerciseEditView iExerciseEditView);
 	void unbindView();
 
-	void loadAllExercises();
-	void loadFavoritesExercises();
+	void clickAddYoutubeVideo();
+//	void clickAcceptChanges(ExerciseDataModel data);
+	void clickAddImage();
+//	void setExerciseData(ExerciseDataModel dat);
 
-	boolean reverseFavorite(int id);
+	void addExercise(ExerciseDataModel data);
+	void updateExercise(ExerciseDataModel data);
+
+	void loadExerciseData(long id);
 }

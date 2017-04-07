@@ -18,35 +18,35 @@ package ua.com.sofon.workoutlogger.dagger.exercises;
 
 import dagger.Module;
 import dagger.Provides;
-import ua.com.sofon.workoutlogger.business.exercises.ExercisesInteractor;
-import ua.com.sofon.workoutlogger.business.exercises.IExercisesInteractor;
+import ua.com.sofon.workoutlogger.business.exercises.ExerciseEditInteractor;
+import ua.com.sofon.workoutlogger.business.exercises.IExerciseEditInteractor;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.ExercisesRepository;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.IExercisesRepository;
-import ua.com.sofon.workoutlogger.ui.exercises.presenter.ExercisesPresenter;
-import ua.com.sofon.workoutlogger.ui.exercises.presenter.IExercisesPresenter;
+import ua.com.sofon.workoutlogger.ui.exercises.presenter.ExerciseEditPresenter;
+import ua.com.sofon.workoutlogger.ui.exercises.presenter.IExerciseEditPresenter;
 
 /**
- * Created on 08.03.2017.
+ * Created on 03.04.2017.
  * @author Dimowner
  */
 @Module
-public class ExercisesModule {
+public class ExerciseEditModule {
 
 	@Provides
-	@ExercisesScope
+	@ExerciseEditScope
 	IExercisesRepository provideIExercisesRepository() {
 		return new ExercisesRepository();
 	}
 
 	@Provides
-	@ExercisesScope
-	IExercisesInteractor provideIExercisesInteractor(IExercisesRepository iExercisesRepository) {
-		return new ExercisesInteractor(iExercisesRepository);
+	@ExerciseEditScope
+	IExerciseEditInteractor provideIExerciseEditInteractor(IExercisesRepository iExercisesRepository) {
+		return new ExerciseEditInteractor(iExercisesRepository);
 	}
 
 	@Provides
-	@ExercisesScope
-	IExercisesPresenter provideIExercisesPresenter(IExercisesInteractor iExercisesInteractor) {
-		return new ExercisesPresenter(iExercisesInteractor);
+	@ExerciseEditScope
+	IExerciseEditPresenter provideIExercisesPresenter(IExerciseEditInteractor iExercisesInteractor) {
+		return new ExerciseEditPresenter(iExercisesInteractor);
 	}
 }
