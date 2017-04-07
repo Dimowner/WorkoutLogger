@@ -17,7 +17,7 @@
 package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
-
+import java.util.Arrays;
 import ua.com.sofon.workoutlogger.business.exercises.IExerciseDetailsInteractor;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 import ua.com.sofon.workoutlogger.ui.exercises.views.IExerciseDetailsView;
@@ -77,7 +77,7 @@ public class ExerciseDetailsPresenter implements IExerciseDetailsPresenter {
 			}
 			iExerciseDetailsView.setName(data.getName());
 			iExerciseDetailsView.setDescription(data.getDescription());
-			iExerciseDetailsView.selectGroup(data.getGroup() + "");
+			iExerciseDetailsView.selectGroup(Arrays.toString(data.getGroups()));
 		}
 	}
 }

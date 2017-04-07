@@ -16,6 +16,7 @@
 
 package ua.com.sofon.workoutlogger.data.realm;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -25,20 +26,23 @@ import io.realm.annotations.PrimaryKey;
  */
 public class Exercise extends RealmObject {
 
-	//TODO:check or delete this field
 	public static final String ID = "id";
 	public static final String IS_FAVORITE = "isFavorite";
 
 	@PrimaryKey
 	private long id;
 
-	private int group; //TODO: fix into multi groups
+	private RealmList<ExeGroup> groups;
 
 	private String name;
 
 	private String description;
 
 	private boolean isFavorite;
+
+	private String imagePath;
+
+	private String videoPath;
 
 	public long getId() {
 		return id;
@@ -48,12 +52,20 @@ public class Exercise extends RealmObject {
 		this.id = id;
 	}
 
-	public int getGroup() {
-		return group;
+	public RealmList<ExeGroup> getGroups() {
+		return groups;
 	}
 
-	public void setGroup(int group) {
-		this.group = group;
+	public void setGroups(RealmList<ExeGroup> groups) {
+		this.groups = groups;
+	}
+
+	public int[] getGroupsArray() {
+		int[] g = new int[groups.size()];
+		for (int i = 0; i < groups.size(); i++) {
+			g[i] = groups.get(i).getGroup();
+		}
+		return g;
 	}
 
 	public String getName() {
@@ -80,14 +92,19 @@ public class Exercise extends RealmObject {
 		isFavorite = favorite;
 	}
 
-	@Override
-	public String toString() {
-		return "Exercise{" +
-				"id=" + id +
-				", group=" + group +
-				", name='" + name + '\'' +
-				", description='" + description + '\'' +
-				", isFavorite=" + isFavorite +
-				'}';
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
+
+	public String getVideoPath() {
+		return videoPath;
+	}
+
+	public void setVideoPath(String videoPath) {
+		this.videoPath = videoPath;
 	}
 }

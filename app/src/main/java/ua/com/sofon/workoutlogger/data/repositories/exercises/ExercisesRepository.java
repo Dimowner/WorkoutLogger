@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
-import timber.log.Timber;
+import ua.com.sofon.workoutlogger.data.realm.ExeGroup;
 import ua.com.sofon.workoutlogger.data.realm.Exercise;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 
@@ -33,13 +34,13 @@ public class ExercisesRepository implements IExercisesRepository {
 
 	@Override
 	public List<ExerciseModel> loadAllExercises() {
-		//		TODO: load exercise async
+//		TODO: load exercise async
 		List<ExerciseModel> exes = new ArrayList<>();
 		Realm realm = Realm.getDefaultInstance();
 		try {
 			RealmResults<Exercise> realmResults = realm.where(Exercise.class).findAll();
 			for (Exercise e : realmResults) {
-				ExerciseModel model = new ExerciseModel((int)e.getId(), new int[] {e.getGroup()}, e.getName(), e.getDescription(), e.isFavorite());
+				ExerciseModel model = new ExerciseModel((int)e.getId(), e.getGroupsArray(), e.getName(), e.getDescription(), e.isFavorite());
 				exes.add(model);
 			}
 		} finally {
@@ -56,7 +57,7 @@ public class ExercisesRepository implements IExercisesRepository {
 		try {
 			RealmResults<Exercise> realmResults = realm.where(Exercise.class).equalTo(Exercise.IS_FAVORITE, true).findAll();
 			for (Exercise e : realmResults) {
-				ExerciseModel model = new ExerciseModel((int)e.getId(), new int[] {e.getGroup()}, e.getName(), e.getDescription(), e.isFavorite());
+				ExerciseModel model = new ExerciseModel((int)e.getId(), e.getGroupsArray(), e.getName(), e.getDescription(), e.isFavorite());
 				exes.add(model);
 			}
 		} finally {
@@ -88,9 +89,17 @@ public class ExercisesRepository implements IExercisesRepository {
 					Exercise exercise = new Exercise();
 					exercise.setId(getNextId(realm));
 
+					RealmList<ExeGroup> list = new RealmList<>();
+					int[] groups = data.getGroups();
+					for (int i = 0; i < groups.length; i++) {
+						ExeGroup exeGroup = realm.createObject(ExeGroup.class);
+						exeGroup.setGroup(groups[i]);
+						list.add(exeGroup);
+					}
+					exercise.setGroups(list);
+
 					exercise.setName(data.getName());
 					exercise.setDescription(data.getDescription());
-					exercise.setGroup(data.getGroups()[0]);
 					exercise.setFavorite(false);
 
 					realm.copyToRealmOrUpdate(exercise);
@@ -112,9 +121,38 @@ public class ExercisesRepository implements IExercisesRepository {
 				@Override
 				public void execute(Realm realm) {
 					Exercise e = results.get(0);
-					if (e.getGroup() != data.getGroups()[0]) {
-						e.setGroup(data.getGroups()[0]);
+
+					int[] groups = data.getGroups();
+					//delete unselected groups
+					for (int i = e.getGroups().size() - 1; i >= 0; i--) {
+						boolean contains = false;
+						for (int j = 0; j < groups.length; j++) {
+							if (e.getGroups().get(i).getGroup() == groups[j]) {
+								contains = true;
+								break;
+							}
+						}
+						if (!contains) {
+							e.getGroups().get(i).deleteFromRealm();
+						}
 					}
+
+					//add new selected groups
+					for (int i = 0; i < groups.length; i++) {
+						boolean contains = false;
+						for (int j = 0; j < e.getGroups().size(); j++) {
+							if (groups[i] == e.getGroups().get(j).getGroup()) {
+								contains = true;
+								break;
+							}
+						}
+						if (!contains) {
+							ExeGroup exeGroup = realm.createObject(ExeGroup.class);
+							exeGroup.setGroup(groups[i]);
+							e.getGroups().add(exeGroup);
+						}
+					}
+
 					if (!e.getName().equals(data.getName())) {
 						e.setName(data.getName());
 					}
@@ -164,7 +202,7 @@ public class ExercisesRepository implements IExercisesRepository {
 	}
 
 	private ExerciseModel exerciseToExerciseModel(Exercise e) {
-		return new ExerciseModel(e.getId(), new int[] {e.getGroup()},
+		return new ExerciseModel(e.getId(), e.getGroupsArray(),
 				e.getName(), e.getDescription(), e.isFavorite());
 	}
 

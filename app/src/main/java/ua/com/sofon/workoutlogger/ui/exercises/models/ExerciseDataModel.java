@@ -16,6 +16,7 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.models;
 
+import java.util.Arrays;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 
 /**
@@ -26,7 +27,7 @@ public class ExerciseDataModel {
 
 	private long id;
 
-	private int group; //TODO: fix into multi groups
+	private int[] groups;
 
 	private String name;
 
@@ -38,9 +39,9 @@ public class ExerciseDataModel {
 
 	private boolean isFavorite;
 
-	public ExerciseDataModel(long id, int group, String name, String description, String imagePath, String videoPath, boolean isFavorite) {
+	public ExerciseDataModel(long id, int[] groups, String name, String description, String imagePath, String videoPath, boolean isFavorite) {
 		this.id = id;
-		this.group = group;
+		this.groups = groups;
 		this.name = name;
 		this.description = description;
 		this.imagePath = imagePath;
@@ -56,12 +57,12 @@ public class ExerciseDataModel {
 		this.id = id;
 	}
 
-	public int getGroup() {
-		return group;
+	public int[] getGroups() {
+		return groups;
 	}
 
-	public void setGroup(int group) {
-		this.group = group;
+	public void setGroups(int[] groups) {
+		this.groups = groups;
 	}
 
 	public String getName() {
@@ -105,14 +106,14 @@ public class ExerciseDataModel {
 	}
 
 	public ExerciseModel toExerciseModel() {
-		return new ExerciseModel(id, new int[] {group}, name, description, isFavorite);
+		return new ExerciseModel(id, groups, name, description, isFavorite);
 	}
 
 	@Override
 	public String toString() {
 		return "ExerciseDataModel{" +
 				"id=" + id +
-				", group=" + group +
+				", groups=" + Arrays.toString(groups) +
 				", name='" + name + '\'' +
 				", description='" + description + '\'' +
 				", imagePath='" + imagePath + '\'' +

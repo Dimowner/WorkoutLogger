@@ -24,7 +24,6 @@ import android.support.annotation.NonNull;
  */
 public class ExerciseModel {
 
-
 	protected long id;
 	protected int[] groups;
 	protected String name;

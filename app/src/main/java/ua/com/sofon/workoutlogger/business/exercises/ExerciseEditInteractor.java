@@ -35,7 +35,7 @@ public class ExerciseEditInteractor implements IExerciseEditInteractor {
 	@Override
 	public ExerciseDataModel loadData(long id) {
 		ExerciseModel e = iExercisesRepository.loadExercise(id);
-		return new ExerciseDataModel(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), null, null, e.isFavorite());
+		return new ExerciseDataModel(e.getId(), e.getGroups(), e.getName(), e.getDescription(), null, null, e.isFavorite());
 	}
 
 //	@Override

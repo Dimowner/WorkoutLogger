@@ -179,7 +179,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 	private ExerciseDataModel getExerciseData() {
 		return new ExerciseDataModel(
 				id,
-				txtMuscleGroups.getSelectedIds()[0],
+				txtMuscleGroups.getSelectedIds(),
 				txtName.getText().toString(),
 				txtDescription.getText().toString(),
 				null,

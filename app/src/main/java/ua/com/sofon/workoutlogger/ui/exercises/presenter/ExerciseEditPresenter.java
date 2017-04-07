@@ -17,7 +17,7 @@
 package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
-
+import java.util.Arrays;
 import ua.com.sofon.workoutlogger.business.exercises.IExerciseEditInteractor;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 import ua.com.sofon.workoutlogger.ui.exercises.views.IExerciseEditView;
@@ -51,11 +51,6 @@ public class ExerciseEditPresenter implements IExerciseEditPresenter {
 
 	}
 
-//	@Override
-//	public void clickAcceptChanges(ExerciseDataModel data) {
-//		iExerciseEditInteractor.saveData(data);
-//	}
-
 	@Override
 	public void clickAddImage() {
 
@@ -84,7 +79,7 @@ public class ExerciseEditPresenter implements IExerciseEditPresenter {
 			}
 			iExerciseEditView.setName(data.getName());
 			iExerciseEditView.setDescription(data.getDescription());
-			iExerciseEditView.selectGroup(data.getGroup() + "");
+			iExerciseEditView.selectGroup(Arrays.toString(data.getGroups()));
 		}
 	}
 }
