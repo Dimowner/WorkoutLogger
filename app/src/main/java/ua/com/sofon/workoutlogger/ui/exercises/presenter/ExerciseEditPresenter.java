@@ -95,7 +95,7 @@ public class ExerciseEditPresenter implements IExerciseEditPresenter {
 		}
 		iExerciseEditView.setName(data.getName());
 		iExerciseEditView.setDescription(data.getDescription());
-		iExerciseEditView.selectGroup(Arrays.toString(data.getGroups()));
+		iExerciseEditView.selectGroup(data.getGroups());
 		iExerciseEditView.hideProgress();
 	}
 

@@ -101,7 +101,7 @@ public class ExerciseDetailsPresenter implements IExerciseDetailsPresenter {
 		}
 		iExerciseDetailsView.setName(data.getName());
 		iExerciseDetailsView.setDescription(data.getDescription());
-		iExerciseDetailsView.selectGroup(Arrays.toString(data.getGroups()));
+		iExerciseDetailsView.selectGroup(data.getGroups());
 		iExerciseDetailsView.setFavorite(data.isFavorite());
 		iExerciseDetailsView.hideProgress();
 	}

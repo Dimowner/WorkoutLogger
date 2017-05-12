@@ -25,12 +25,10 @@ import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
  */
 public interface IExerciseEditView extends IBaseView {
 
-	void showProgress();
-	void hideProgress();
 	void showError();
 	void setImage(String path);
 	void setName(String name);
-	void selectGroup(String group);
+	void selectGroup(int[] ids);
 	void setDescription(String description);
 	void exerciseUpdated();
 	void exerciseAdded(ExerciseDataModel model);

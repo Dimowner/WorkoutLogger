@@ -16,7 +16,6 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.views;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,6 +31,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -267,10 +268,21 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 	}
 
 	@Override
-	public void selectGroup(String group) {
-		Timber.v("setGroup = " + group);
-//		TODO: fix groups, replays group names by ids
-		txtMuscleGroups.setText(group);
+	public void selectGroup(int[] ids) {
+		Timber.v("setGroup = " + Arrays.toString(ids));
+		txtMuscleGroups.setText(groupIdsToText(ids));
+	}
+
+	private String groupIdsToText(int[] ids) {
+		String[] groups = getResources().getStringArray(R.array.exercises_types_array);
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < ids.length; i++) {
+			sb.append(groups[ids[i]]);
+			if (i < ids.length - 1) {
+				sb.append(", ");
+			}
+		}
+		return sb.toString();
 	}
 
 	@Override

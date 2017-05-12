@@ -35,6 +35,7 @@
 		<!--TODO: fix title-->
 		<activity
 				android:name=".ui.exercises.views.ExerciseEditActivity"
+				android:windowSoftInputMode="stateHidden"
 				android:label="Edit exercise"/>
 
 	</application>

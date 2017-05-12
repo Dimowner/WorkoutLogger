@@ -23,6 +23,4 @@
 		android:padding="@dimen/padding_standard"
 		android:textSize="16sp"
 		android:checkMark="?android:attr/listChoiceIndicatorMultiple"
-		android:clickable="true"
-		android:checked="true"
 		android:gravity="center_vertical" />

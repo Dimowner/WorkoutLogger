@@ -17,10 +17,10 @@
 package ua.com.sofon.workoutlogger.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
-import android.widget.TextView;
 import ua.com.sofon.workoutlogger.R;
 
 /**
@@ -56,41 +55,33 @@ public class MultiSelectTextView extends AppCompatTextView {
 	 */
 	private void initDialog(final Context context, final List<String> names, List<Integer> ids) {
 		setClickable(true);
-		ListView listView = new ListView(context);
+		listView = new ListView(context);
 		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		adapter = new CheckBoxListAdapter(names, ids);
 		listView.setAdapter(adapter);
+
+		listView.setOnItemClickListener((parent, view, position, id) ->
+				listView.setItemChecked(position, listView.isItemChecked(position)));
 		alertDialog = new AlertDialog.Builder(context)
 				.setView(listView)
-				.setPositiveButton(R.string.btn_select, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						selectedIds = adapter.getSelectedIds();
+				.setPositiveButton(R.string.btn_select, (dialog, whichButton) -> {
+					long[] selectedIds = listView.getCheckedItemIds();
 
-						String[] names = new String[selectedIds.length];
-						StringBuilder sb = new StringBuilder();
-						for (int i = 0; i < selectedIds.length; i++) {
-							names[i] = adapter.findNameById(selectedIds[i]);
-							sb.append(names[i]).append(", ");
+					String[] names1 = new String[selectedIds.length];
+					StringBuilder sb = new StringBuilder();
+					for (int i = 0; i < selectedIds.length; i++) {
+						names1[i] = adapter.findNameById((int)selectedIds[i]);
+						sb.append(names1[i]);
+						if (i < selectedIds.length - 1) {
+							sb.append(", ");
 						}
-						if (sb.length() > 0) {
-							sb.delete(sb.length() - 2, sb.length());
-						}
-						setText(sb.toString());
-						onItemsSelectedListener.OnItemsSelected(selectedIds, names);
-						adapter.clearSelectedIds();
 					}
+					setText(sb.toString());
 				})
-				.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-					}
-				})
-				.setNeutralButton(R.string.btn_clear, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
+				.setNegativeButton(R.string.btn_cancel, (dialog, whichButton) -> {})
+				.setNeutralButton(R.string.btn_clear, (dialog, whichButton) -> {
 						setText("");
-						onItemsSelectedListener.OnItemsSelected(new int[0], new String[0]);
-						adapter.clearSelectedIds();
-					}
-				})
+						listView.clearChoices();})
 				.create();
 	}
 
@@ -99,9 +90,6 @@ public class MultiSelectTextView extends AppCompatTextView {
 		if (event.getAction() == MotionEvent.ACTION_UP
 				&& isEnabled()) {
 			alertDialog.show();
-//			if (adapter != null && selectedIds != null) {
-//				adapter.setSelectedIds(selectedIds);
-//			}
 			if (showNeutralButton) {
 				alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL)
 						.setVisibility(View.VISIBLE);
@@ -127,19 +115,36 @@ public class MultiSelectTextView extends AppCompatTextView {
 	 * @param ids Items ids.
 	 */
 	public void setData(String[] names, int[] ids) {
-		List<String> namesList = new ArrayList<>();
 		List<Integer> idList = new ArrayList<>();
-		for (int i = 0; i < names.length; i++) {
-			namesList.add(names[i]);
-		}
 		for (int i = 0; i < ids.length; i++) {
 			idList.add(ids[i]);
 		}
-		initDialog(context, namesList, idList);
+		initDialog(context, Arrays.asList(names), idList);
 	}
 
 	public int[] getSelectedIds() {
-		return selectedIds;
+		long[] ids = listView.getCheckedItemIds();
+		int[] intIds = new int[ids.length];
+		for (int i = 0; i < ids.length; i++) {
+			intIds[i] = (int) ids[i];
+		}
+		return intIds;
+	}
+
+	public void setSelectedIds(int[] selectedIds) {
+		for (int i = 0; i < selectedIds.length; i++) {
+			listView.setItemChecked(selectedIds[i], true);
+		}
+		String[] names = new String[selectedIds.length];
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < selectedIds.length; i++) {
+			names[i] = adapter.findNameById(selectedIds[i]);
+			sb.append(names[i]);
+			if (i < selectedIds.length - 1) {
+				sb.append(", ");
+			}
+		}
+		setText(sb.toString());
 	}
 
 	/**
@@ -175,14 +180,6 @@ public class MultiSelectTextView extends AppCompatTextView {
 		alertDialog.setIcon(resId);
 	}
 
-	public OnItemsSelectedListener getOnItemsSelectedListener() {
-		return onItemsSelectedListener;
-	}
-
-	public void setOnItemsSelectedListener(OnItemsSelectedListener onItemsSelectedListener) {
-		this.onItemsSelectedListener = onItemsSelectedListener;
-	}
-
 	/** Dialog window for showing view */
 	private AlertDialog alertDialog;
 
@@ -192,21 +189,10 @@ public class MultiSelectTextView extends AppCompatTextView {
 	/** Adapter shows items to select in dialogs list. */
 	private CheckBoxListAdapter adapter;
 
-	/** Already selected items. */
-	private int[] selectedIds;
+	private ListView listView;
 
 	/** Application context. */
 	private Context context;
-
-	/** Select listener rise event on button "Select" or "Clear" clicked. */
-	private OnItemsSelectedListener onItemsSelectedListener;
-
-	/**
-	 * Listen, when done select items.
-	 */
-	public interface OnItemsSelectedListener {
-		void OnItemsSelected(int[] ids, String[] names);
-	}
 
 
 	/**
@@ -215,7 +201,6 @@ public class MultiSelectTextView extends AppCompatTextView {
 	public class CheckBoxListAdapter extends BaseAdapter {
 
 		public CheckBoxListAdapter(List<String> names, List<Integer> ids) {
-			selectedIds = new ArrayList<>();
 			if (names != null) {
 				this.names = names;
 			} else {
@@ -244,6 +229,11 @@ public class MultiSelectTextView extends AppCompatTextView {
 		}
 
 		@Override
+		public boolean hasStableIds() {
+			return true;
+		}
+
+		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final CheckedTextView rowView;
 			if (convertView == null) {
@@ -254,27 +244,7 @@ public class MultiSelectTextView extends AppCompatTextView {
 			} else {
 				rowView = (CheckedTextView) convertView;
 			}
-			if (selectedIds.contains(ids.get(position))) {
-				rowView.setChecked(true);
-			} else {
-				rowView.setChecked(false);
-			}
 			rowView.setText(names.get(position));
-			rowView.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (rowView.isChecked()) {
-						int pos = findIdPos(ids.get(position));
-						if (pos != -1) {
-							selectedIds.remove(pos);
-						}
-						rowView.setChecked(false);
-					} else {
-						selectedIds.add(ids.get(position));
-						rowView.setChecked(true);
-					}
-				}
-			});
 			return rowView;
 		}
 
@@ -290,50 +260,6 @@ public class MultiSelectTextView extends AppCompatTextView {
 			if (ids != null) {
 				this.ids = ids;
 			}
-		}
-
-		/**
-		 * Set programmatically items selected. (!!! Temporary not working!!!)
-		 * @param ids Ids of items to select
-		 */
-		private void setSelectedIds(int[] ids) {
-			if (ids != null && ids.length > 0) {
-				for (int i = 0; i < ids.length; i++) {
-					selectedIds.add(ids[i]);
-				}
-			}
-		}
-
-		/**
-		 * Get array of selected items.
-		 * @return id array of selected items.
-		 */
-		public int[] getSelectedIds() {
-			int[] ids = new int[selectedIds.size()];
-			for (int i = 0; i < selectedIds.size(); i++) {
-				ids[i] = selectedIds.get(i);
-			}
-			return ids;
-		}
-
-		/**
-		 * Clear selected items data.
-		 */
-		public void clearSelectedIds() {
-			selectedIds.clear();
-		}
-
-		/**
-		 * Find item position in list by ID.
-		 * @param id ID of item to find.
-		 */
-		private int findIdPos(int id) {
-			for (int i = 0; i < selectedIds.size(); i++) {
-				if (id == selectedIds.get(i)) {
-					return i;
-				}
-			}
-			return -1;
 		}
 
 		/**
@@ -354,8 +280,5 @@ public class MultiSelectTextView extends AppCompatTextView {
 
 		/** All items names. */
 		private List<String> names;
-
-		/** Selected items ids. */
-		private List<Integer> selectedIds;
 	}
 }

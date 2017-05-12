@@ -17,11 +17,8 @@
 package ua.com.sofon.workoutlogger.ui.exercises.views;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -29,11 +26,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -100,10 +97,6 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 		txtMuscleGroups.setData(names, ids);
 		txtMuscleGroups.setTitle(getString(R.string.title_muscle_groups));
 		txtMuscleGroups.showNeutralButton(true);
-		txtMuscleGroups.setOnItemsSelectedListener((ids1, names1) -> {
-//				mExercise.setGroups(ids);
-//				TODO: update groups
-		});
 	}
 
 	@Override
@@ -194,10 +187,9 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 	}
 
 	@Override
-	public void selectGroup(String group) {
-		Timber.v("setGroup = " + group);
-//		TODO: fix groups, replays group names by ids
-		txtMuscleGroups.setText(group);
+	public void selectGroup(int[] ids) {
+		Timber.v("setGroup = " + Arrays.toString(ids));
+		txtMuscleGroups.setSelectedIds(ids);
 	}
 
 	@Override

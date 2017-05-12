@@ -27,9 +27,6 @@ import ua.com.sofon.workoutlogger.ui.exercises.models.ListItem;
  */
 public interface IExercisesView extends IBaseView {
 
-	void showProgress();
-	void hideProgress();
-
 	void showLoadError(String error);
 	void showExercises(List<ListItem> list);
 	void updateExercise(ListItem item);

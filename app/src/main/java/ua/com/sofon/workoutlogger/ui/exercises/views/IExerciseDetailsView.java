@@ -24,13 +24,11 @@ import ua.com.sofon.workoutlogger.IBaseView;
  */
 public interface IExerciseDetailsView extends IBaseView {
 
-//	void showProgress();
-//	void hideProgress();
 	void showError();
 
 	void setImage(String path);
 	void setName(String name);
-	void selectGroup(String group);
+	void selectGroup(int[] ids);
 	void setDescription(String description);
 	void setFavorite(boolean fav);
 
