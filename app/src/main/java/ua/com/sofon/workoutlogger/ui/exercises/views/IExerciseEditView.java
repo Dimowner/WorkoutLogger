@@ -16,20 +16,22 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.views;
 
+import ua.com.sofon.workoutlogger.IBaseView;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 
 /**
  * Created on 02.04.2017.
  * @author Dimowner
  */
-public interface IExerciseEditView {
+public interface IExerciseEditView extends IBaseView {
 
 	void showProgress();
 	void hideProgress();
+	void showError();
 	void setImage(String path);
 	void setName(String name);
 	void selectGroup(String group);
 	void setDescription(String description);
 	void exerciseUpdated();
-	void exerciseAdded();
+	void exerciseAdded(ExerciseDataModel model);
 }

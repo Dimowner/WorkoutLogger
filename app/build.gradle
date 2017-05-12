@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 //apply plugin: 'kotlin-android-extensions'
 apply plugin: 'android-command'
 apply plugin: 'realm-android'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
 	compileSdkVersion rootProject.ext.compileSdkVersion
@@ -28,10 +29,10 @@ android {
 //		main.java.srcDirs += 'src/main/kotlin'
 //	}
 
-//	compileOptions {
-//		sourceCompatibility JavaVersion.VERSION_1_8
-//		targetCompatibility JavaVersion.VERSION_1_8
-//	}
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
 }
 
 dependencies {

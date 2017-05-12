@@ -31,19 +31,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.WLApplication;
 import ua.com.sofon.workoutlogger.dagger.exercises.ExercisesModule;
+import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ListItem;
 import ua.com.sofon.workoutlogger.ui.exercises.presenter.IExercisesPresenter;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created on 07.03.2017.
@@ -54,15 +63,26 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 	public static final int VIEW_TYPE_ALL_EXERCISES = 1;
 	public static final int VIEW_TYPE_FEV_EXERCISES = 2;
 
+	public static final int ADD_TO_FAVORITES_ANIMATION_DURATION = 500;
+
 	public static final String EXTRAS_KEY_VIEW_TYPE = "view_type";
+
+	public static final int REQ_CODE_EXERCISE_DETAILS = 3;
+
 	@Inject
 	IExercisesPresenter iExercisesPresenter;
 
-//	private MyAdapter mAdapter;
+	@BindView(R.id.progress_view) ProgressBar mProgressView;
+
+	@BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+
 	private ExpandableRecyclerAdapter mAdapter;
-	private RecyclerView mRecyclerView;
+
+	private OnListItemUpdateListener onListItemUpdateListener;
 
 	private int mViewType;
+
+	private long someId = -1;
 
 	public static ExercisesFragment newInstance(int type) {
 		ExercisesFragment fragment = new ExercisesFragment();
@@ -79,16 +99,16 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		WLApplication.get(getContext()).applicationComponent().plus(new ExercisesModule()).injectAllExes(this);
+		WLApplication.get(getContext()).applicationComponent()
+				.plus(new ExercisesModule()).injectAllExes(this);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 									 Bundle savedInstanceState) {
-		ViewGroup rootView = (ViewGroup) inflater.inflate(
-				R.layout.fragment_exercises, container, false);
-
-		return rootView;
+		View view = inflater.inflate(R.layout.fragment_exercises, container, false);
+		ButterKnife.bind(this, view);
+		return view;
 	}
 
 	@Override
@@ -111,57 +131,88 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 		divider.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.recycler_divider));
 		mRecyclerView.addItemDecoration(divider);
 
-//		List<ExerciseModel> data = new ArrayList<>();
-//		data.add(new ExerciseModel(12, new int[] {2}, "Dobriy sila", "Valu s nogi ya poebaly"));
-//		mAdapter = new MyAdapter(data);
-//		exeListView.setAdapter(mAdapter);
-
-		List<ListItem> data = new ArrayList<>();
-
-//		ListItem expItem1 = new ListItem(1, 2, "Privet", null, false);
-//		expItem1.addChild(new ListItem(8, 2, "Poka", null, false));
-//		expItem1.addChild(new ListItem(9, 2, "Doroga", null, true));
-//		expItem1.addChild(new ListItem(10, 2, "Jdet", null, true));
-//		data.add(expItem1);
-//		ListItem expItem2 = new ListItem(11, 5, "Kak dela?", null, false);
-//		expItem2.addChild(new ListItem(12, 5, "Zaezdjay", null, false));
-//		expItem2.addChild(new ListItem(13, 5, "Esli budet vremya", null, true));
-//		data.add(expItem2);
-//		data.add(new ListItem(3, 3, "Y meniya zbs!", null, false));
-//		data.add(new ListItem(4, 7, "Roskazi pro sebiya", null, false));
-//		data.add(new ListItem(5, 1, "Ny ladno mne pora", null, false));
-//		data.add(new ListItem(6, 2, "Davai bratisha", null, false));
-//		ListItem expItem3 = new ListItem(14, 5, "ddKak dela?", null, true);
-//		expItem3.addChild(new ListItem(15, 5, "sssZaezdjay", null, false));
-//		expItem3.addChild(new ListItem(16, 5, "dasEsli budet vremya", null, true));
-//		data.add(expItem3);
-//		data.add(new ListItem(7, 5, "Oki doki", null, false));
-
-		mAdapter = new ExpandableRecyclerAdapter(data);
-		mAdapter.setClickListener(new ClickListener() {
-			@Override
-			public void onClick(View view, int position) {
-				Intent intent = new Intent(getActivity(), ExerciseDetailsActivity.class);
-				intent.putExtra("position", position);
-				Timber.v("ID = " + mAdapter.getItemId(position));
-				intent.putExtra(ExercisesActivity.EXTRAS_KEY_EXERCISE_ID, mAdapter.getItemId(position));
-				startActivity(intent);
-			}
+		mAdapter = new ExpandableRecyclerAdapter();
+		mAdapter.setClickListener((view1, position) -> {
+			Intent intent = new Intent(getActivity(), ExerciseDetailsActivity.class);
+			someId = mAdapter.getItemId(position);
+			intent.putExtra(ExercisesActivity.EXTRAS_KEY_EXERCISE_ID, mAdapter.getItemId(position));
+			startActivityForResult(intent, REQ_CODE_EXERCISE_DETAILS);
 		});
-		mAdapter.setOnFavoriteClickListener(new OnFavoriteClickListener() {
-			@Override
-			public void onFavoriteClick(View view, int position, int id, int action) {
-				if (action == ExpandableRecyclerAdapter.ACTION_ADD_TO_FAVORITES) {
-					Timber.v("Item id = " + id + ", added to favorites");
-				} else {
-					Timber.v("Item id = " + id + ", removed from favorites");
-				}
-				iExercisesPresenter.reverseFavorite(id);
+		mAdapter.setOnFavoriteClickListener((view12, position, id, action) -> {
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				//Add or remove from favorites with animation
+				view12.setImageResource(R.drawable.avd_favorite_progress);
+				Animatable animatable = ((Animatable) view12.getDrawable());
+				animatable.start();
+				iExercisesPresenter.reverseFavorite(id)
+						.delay(ADD_TO_FAVORITES_ANIMATION_DURATION, TimeUnit.MILLISECONDS)
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribe(b -> {
+									animatable.stop();
+									mAdapter.updateFavorites(id, b);
+									mAdapter.notifyItemChanged(position);
+									if (onListItemUpdateListener != null) {
+										onListItemUpdateListener.onListItemUpdate(id);
+									}
+								},
+								throwable -> {
+									animatable.stop();
+									Timber.e("", throwable);
+								});
+			} else {
+				//Add or remove from favorites without animation
+				iExercisesPresenter.reverseFavorite(id)
+						.subscribe(b -> {
+									mAdapter.updateFavorites(id, b);
+									mAdapter.notifyItemChanged(position);
+									if (onListItemUpdateListener != null) {
+										onListItemUpdateListener.onListItemUpdate(id);
+									}
+								},
+								throwable -> Timber.e("", throwable));
 			}
 		});
 		mRecyclerView.setAdapter(mAdapter);
 
 		iExercisesPresenter.bindView(this);
+		buildList();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		Timber.v("activityResult req = " + requestCode + " res = " + resultCode);
+		int action = ExerciseDetailsActivity.ACTION_UNKNOWN;
+		if (data != null && data.hasExtra(ExerciseDetailsActivity.EXTRAS_KEY_ACTION)) {
+			action = data.getIntExtra(ExerciseDetailsActivity.EXTRAS_KEY_ACTION, ExerciseDetailsActivity.ACTION_UNKNOWN);
+		}
+		if ((resultCode == RESULT_OK || resultCode == RESULT_CANCELED)
+				&& requestCode == REQ_CODE_EXERCISE_DETAILS) {
+			switch (action) {
+				case ExerciseDetailsActivity.ACTION_DELETED:
+					onListItemUpdateListener.onListItemUpdate(someId);
+					mAdapter.removeItem(someId);
+					break;
+				case ExerciseDetailsActivity.ACTION_ADDED_TO_FAVORITES:
+					onListItemUpdateListener.onListItemUpdate(someId);
+					mAdapter.updateFavorites(someId, true);
+					break;
+				case ExerciseDetailsActivity.ACTION_REMOVED_FROM_FAVORITES:
+					onListItemUpdateListener.onListItemUpdate(someId);
+					mAdapter.updateFavorites(someId, false);
+					break;
+				case ExerciseDetailsActivity.ACTION_UPDATED:
+					onListItemUpdateListener.onListItemUpdate(someId);
+					iExercisesPresenter.updateListItem(someId);
+					break;
+				case ExerciseDetailsActivity.ACTION_UNKNOWN:
+					//Do nothing
+					break;
+			}
+		}
+	}
+
+	public void buildList() {
 		if (mViewType == VIEW_TYPE_ALL_EXERCISES) {
 			iExercisesPresenter.loadAllExercises();
 		} else {
@@ -175,14 +226,41 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 		iExercisesPresenter.unbindView();
 	}
 
+	public void addItemToList(ExerciseDataModel item) {
+		mAdapter.addItem(new ListItem(item.getId(), item.getGroups()[0], item.getName(), item.getImagePath(), item.isFavorite()));
+	}
+
+	public void removeItemFromList(long id) {
+		mAdapter.removeItem(id);
+	}
+
+	public void updateListItem(ExerciseDataModel item) {
+		mAdapter.updateListItem(new ListItem(item.getId(), item.getGroups()[0], item.getName(), item.getImagePath(), item.isFavorite()));
+	}
+
+	public void updateListItem(long id) {
+		iExercisesPresenter.updateListItem(id);
+	}
+
+	public void updateListFavorites(long id, int action) {
+		mAdapter.updateFavorites(id, action);
+	}
+
+	public void setOnListItemUpdateListener(OnListItemUpdateListener onListItemUpdateListener) {
+		this.onListItemUpdateListener = onListItemUpdateListener;
+	}
+
 	@Override
 	public void showProgress() {
+//		TODO:implement showing progress
 		Timber.v("Show progress");
+		mProgressView.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void hideProgress() {
 		Timber.v("Hide progress");
+		mProgressView.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -192,16 +270,13 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 
 	@Override
 	public void showExercises(List<ListItem> list) {
-		Timber.v("Show all exercises");
-
-//		List<ListItem> data = new ArrayList<>();
-//		for (ExerciseModel e : list) {
-//			ListItem i = new ListItem(e.getId(), e.getGroups()[0], e.getName(), null, e.isFavorite());
-//			data.add(i);
-//		}
-
+		Timber.v("Show all exercises" + list.size());
 		mAdapter.setData(list);
-		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void updateExercise(ListItem item) {
+		mAdapter.updateListItem(item);
 	}
 
 	@Override
@@ -262,12 +337,63 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 			}
 		}
 
-		public ExpandableRecyclerAdapter(List<ListItem> myDataset) {
-			this.mShowingData = myDataset;
+		public ExpandableRecyclerAdapter() {
+			mShowingData = new ArrayList<>();
 		}
 
 		public void setData(List<ListItem> data) {
+			Timber.v("setData = " + data.size());
 			mShowingData = data;
+			notifyDataSetChanged();
+		}
+
+		public void addItem(ListItem item) {
+			mShowingData.add(item);
+			notifyDataSetChanged();
+		}
+
+		public void removeItem(long id) {
+			for (int i = 0; i < mShowingData.size(); i++) {
+				if (mShowingData.get(i).getId() == id) {
+					mShowingData.remove(i);
+					notifyDataSetChanged();
+					break;
+				}
+			}
+		}
+
+		public void updateListItem(ListItem item) {
+			for (int i = 0; i < mShowingData.size(); i++) {
+				if (mShowingData.get(i).getId() == item.getId()) {
+					mShowingData.set(i, item);
+					notifyItemChanged(i);
+					break;
+				}
+			}
+		}
+
+		public void updateFavorites(long id, boolean fav) {
+			for (int i = 0; i < mShowingData.size(); i++) {
+				if (mShowingData.get(i).getId() == id) {
+					mShowingData.get(i).setFavorite(fav);
+					notifyItemChanged(i);
+					break;
+				}
+			}
+		}
+
+		public void updateFavorites(long id, int action) {
+			for (int i = 0; i < mShowingData.size(); i++) {
+				if (mShowingData.get(i).getId() == id) {
+					if (action == ACTION_ADD_TO_FAVORITES) {
+						mShowingData.get(i).setFavorite(true);
+					} else {
+						mShowingData.get(i).setFavorite(false);
+					}
+					notifyItemChanged(i);
+					break;
+				}
+			}
 		}
 
 		@Override
@@ -290,14 +416,12 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 				case TYPE_GROUP:
 					View v = LayoutInflater.from(parent.getContext())
 							.inflate(R.layout.list_item_group, parent, false);
-					GroupViewHolder vh = new GroupViewHolder(v);
-					return vh;
+					return new GroupViewHolder(v);
 
 				case TYPE_CHILD:
 					View v1 = LayoutInflater.from(parent.getContext())
 							.inflate(R.layout.list_item_child, parent, false);
-					ChildViewHolder vh1 = new ChildViewHolder(v1);
-					return vh1;
+					return new ChildViewHolder(v1);
 				default:
 					return null;
 			}
@@ -311,25 +435,22 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 					final GroupViewHolder groupViewHolder = (GroupViewHolder) holder;
 					final int posGroup = groupViewHolder.getAdapterPosition();
 					final ListItem group = mShowingData.get(posGroup);
-					groupViewHolder.mView.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							if (group.isExpanded()) {
-								hideChildren(v);
-								if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
-									groupViewHolder.ivIcon.setImageResource(R.drawable.vector_anim_chevron_up_to_down);
-									((Animatable) groupViewHolder.ivIcon.getDrawable()).start();
-								} else{
-									groupViewHolder.ivIcon.setImageResource(R.drawable.chevron_down);
-								}
+					groupViewHolder.mView.setOnClickListener(v -> {
+						if (group.isExpanded()) {
+							hideChildren(v);
+							if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
+								groupViewHolder.ivIcon.setImageResource(R.drawable.vector_anim_chevron_up_to_down);
+								((Animatable) groupViewHolder.ivIcon.getDrawable()).start();
+							} else{
+								groupViewHolder.ivIcon.setImageResource(R.drawable.chevron_down);
+							}
+						} else {
+							showChildren(v);
+							if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+								groupViewHolder.ivIcon.setImageResource(R.drawable.vector_anim_chevron_down_to_up);
+								((Animatable) groupViewHolder.ivIcon.getDrawable()).start();
 							} else {
-								showChildren(v);
-								if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-									groupViewHolder.ivIcon.setImageResource(R.drawable.vector_anim_chevron_down_to_up);
-									((Animatable) groupViewHolder.ivIcon.getDrawable()).start();
-								} else {
-									groupViewHolder.ivIcon.setImageResource(R.drawable.chevron_up);
-								}
+								groupViewHolder.ivIcon.setImageResource(R.drawable.chevron_up);
 							}
 						}
 					});
@@ -347,29 +468,18 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 				case TYPE_CHILD:
 					final ChildViewHolder childViewHolder = (ChildViewHolder) holder;
 					final int posChild = childViewHolder.getAdapterPosition();
-					childViewHolder.mView.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							if (mClickListener != null) {
-								mClickListener.onClick(v, posChild);
-							}
+					childViewHolder.mView.setOnClickListener(v -> {
+						if (mClickListener != null) {
+							mClickListener.onClick(v, posChild);
 						}
 					});
 
-					childViewHolder.ivIcon.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							if (onFavoriteClickListener != null) {
-								int action = mShowingData.get(posChild).isFavorite()
-										? ACTION_REMOVE_FROM_FAVORITES : ACTION_ADD_TO_FAVORITES;
-								onFavoriteClickListener.onFavoriteClick(v, posChild, (int)mShowingData.get(posChild).getId(), action);
-								if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP){
-									childViewHolder.ivIcon.setImageResource(R.drawable.avd_favorite_progress);
-									((Animatable) childViewHolder.ivIcon.getDrawable()).start();
-								} else{
-									childViewHolder.ivIcon.setImageResource(R.drawable.star);
-								}
-							}
+					childViewHolder.ivIcon.setOnClickListener(v -> {
+						if (onFavoriteClickListener != null) {
+							int action = mShowingData.get(posChild).isFavorite()
+									? ACTION_REMOVE_FROM_FAVORITES : ACTION_ADD_TO_FAVORITES;
+							onFavoriteClickListener.onFavoriteClick(
+									(ImageView) v, posChild, (int)mShowingData.get(posChild).getId(), action);
 						}
 					});
 
@@ -430,7 +540,7 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 	}
 
 	public interface OnFavoriteClickListener {
-		void onFavoriteClick(View view, int position, int id, int action);
+		void onFavoriteClick(ImageView view, int position, int id, int action);
 	}
 
 	/**
@@ -447,5 +557,9 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 		public boolean supportsPredictiveItemAnimations() {
 			return true;
 		}
+	}
+
+	public interface OnListItemUpdateListener {
+		void onListItemUpdate(long id);
 	}
 }

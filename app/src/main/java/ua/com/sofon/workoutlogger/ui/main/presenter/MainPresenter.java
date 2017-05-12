@@ -16,6 +16,9 @@
 
 package ua.com.sofon.workoutlogger.ui.main.presenter;
 
+import android.support.annotation.NonNull;
+
+import ua.com.sofon.workoutlogger.IBaseView;
 import ua.com.sofon.workoutlogger.ui.main.view.IMainView;
 
 /**
@@ -27,8 +30,8 @@ public class MainPresenter implements IMainPresenter {
 	private IMainView iMainView;
 
 	@Override
-	public void bindView(IMainView iMainView) {
-		this.iMainView = iMainView;
+	public void bindView(@NonNull IBaseView view) {
+		this.iMainView = (IMainView) view;
 	}
 
 	@Override

@@ -18,6 +18,7 @@ package ua.com.sofon.workoutlogger.business.exercises;
 
 import java.util.List;
 
+import rx.Single;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ListItem;
 
 /**
@@ -26,9 +27,9 @@ import ua.com.sofon.workoutlogger.ui.exercises.models.ListItem;
  */
 public interface IExercisesInteractor {
 
-//	Single<ExercisesModel> getAllExercises();
-	List<ListItem> getAllExercises();
-	List<ListItem> getFavoritesExercises();
+	Single<List<ListItem>> getAllExercises();
+	Single<ListItem> getExercise(long id);
+	Single<List<ListItem>> getFavoritesExercises();
 
-	boolean reverseFavorite(long id);
+	Single<Boolean> reverseFavorite(long id);
 }

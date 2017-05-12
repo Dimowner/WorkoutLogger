@@ -16,7 +16,10 @@
 
 package ua.com.sofon.workoutlogger.business.exercises;
 
-import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
+import java.util.concurrent.TimeUnit;
+
+import rx.Single;
+import rx.schedulers.Schedulers;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.IExercisesRepository;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 
@@ -33,18 +36,23 @@ public class ExerciseDetailsInteractor implements IExerciseDetailsInteractor {
 	}
 
 	@Override
-	public ExerciseDataModel loadData(long id) {
-		ExerciseModel e = iExercisesRepository.loadExercise(id);
-		return new ExerciseDataModel(e.getId(), e.getGroups(), e.getName(), e.getDescription(), null, null, e.isFavorite());
+	public Single<ExerciseDataModel> loadData(long id) {
+		return iExercisesRepository.loadExercise(id)
+				.delay(500, TimeUnit.MILLISECONDS)
+				.map(ExerciseDataModel::new);
 	}
 
 	@Override
-	public boolean reverseFavorite(long id) {
-		return iExercisesRepository.reverseFavorite(id);
+	public Single<Boolean> reverseFavorite(long id) {
+		return iExercisesRepository.reverseFavorite(id)
+				.delay(500, TimeUnit.MILLISECONDS)
+				.subscribeOn(Schedulers.io());
 	}
 
 	@Override
-	public void deleteExercise(long id) {
-		iExercisesRepository.deleteExercise(id);
+	public  Single<Boolean> deleteExercise(long id) {
+		return iExercisesRepository.deleteExercise(id)
+				.delay(500, TimeUnit.MILLISECONDS)
+				.subscribeOn(Schedulers.io());
 	}
 }

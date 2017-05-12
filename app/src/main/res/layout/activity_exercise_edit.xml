@@ -17,6 +17,7 @@
 <android.support.design.widget.CoordinatorLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:id="@+id/main_exercise_edit_layout"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
@@ -28,10 +29,10 @@
 			android:fitsSystemWindows="true"
 			android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-		<include layout="@layout/toolbar_actionbar"/>
+		<include layout="@layout/toolbar_with_progress"/>
 	</android.support.design.widget.AppBarLayout>
 
-	<FrameLayout
+	<ScrollView
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -51,6 +52,7 @@
 					app:srcCompat="@drawable/camera"/>
 
 			<LinearLayout
+					android:id="@+id/exe_edit_name_container"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:background="@color/light_cyan"
@@ -100,108 +102,16 @@
 						android:textSize="16sp"/>
 			</android.support.design.widget.TextInputLayout>
 
+			<TextView
+					android:id="@+id/exe_edit_error"
+					android:layout_width="wrap_content"
+					android:layout_height="match_parent"
+					android:text="@string/common_error"
+					android:textSize="16sp"
+					android:textStyle="bold"
+					android:layout_gravity="center"
+					android:padding="@dimen/padding_standard"
+					android:visibility="gone"/>
 		</LinearLayout>
-	</FrameLayout>
+	</ScrollView>
 </android.support.design.widget.CoordinatorLayout>
-
-
-<!--<ScrollView-->
-		<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-		<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-		<!--xmlns:tools="http://schemas.android.com/tools"-->
-		<!--android:layout_width="match_parent"-->
-		<!--android:layout_height="match_parent">-->
-
-	<!--<android.support.constraint.ConstraintLayout-->
-			<!--android:id="@+id/coordinator_layout"-->
-			<!--android:layout_width="match_parent"-->
-			<!--android:layout_height="wrap_content">-->
-
-		<!--<ImageView-->
-				<!--android:id="@+id/imageView"-->
-				<!--android:layout_width="0dp"-->
-				<!--android:layout_height="180dp"-->
-				<!--android:scaleType="center"-->
-				<!--app:layout_constraintHorizontal_bias="0.0"-->
-				<!--app:layout_constraintLeft_toLeftOf="parent"-->
-				<!--app:layout_constraintRight_toRightOf="parent"-->
-				<!--app:layout_constraintTop_toBottomOf="@+id/toolbar"-->
-				<!--app:srcCompat="@drawable/camera"-->
-				<!--tools:layout_constraintLeft_creator="1"-->
-				<!--tools:layout_constraintRight_creator="1"/>-->
-
-		<!--<android.support.v7.widget.Toolbar-->
-				<!--android:id="@+id/toolbar"-->
-				<!--android:layout_width="0dp"-->
-				<!--android:layout_height="wrap_content"-->
-				<!--android:background="?attr/colorPrimary"-->
-				<!--android:minHeight="?attr/actionBarSize"-->
-				<!--android:theme="?attr/actionBarTheme"-->
-				<!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
-				<!--app:contentInsetStart="?actionBarInsetStart"-->
-				<!--app:layout_constraintTop_toTopOf="parent"-->
-				<!--app:layout_constraintRight_toRightOf="parent"-->
-				<!--app:layout_constraintLeft_toLeftOf="parent"/>-->
-
-		<!--<LinearLayout-->
-				<!--android:layout_width="0dp"-->
-				<!--android:layout_height="wrap_content"-->
-				<!--android:background="@color/light_cyan"-->
-				<!--android:orientation="vertical"-->
-				<!--app:layout_constraintHorizontal_bias="0.0"-->
-				<!--app:layout_constraintLeft_toLeftOf="parent"-->
-				<!--app:layout_constraintRight_toRightOf="parent"-->
-				<!--app:layout_constraintTop_toBottomOf="@+id/imageView"-->
-				<!--tools:layout_constraintRight_creator="1"-->
-				<!--tools:layout_constraintLeft_creator="1"-->
-				<!--android:id="@+id/linearLayout">-->
-
-			<!--<android.support.design.widget.TextInputLayout-->
-					<!--android:id="@+id/exe_edit_name_input"-->
-					<!--android:layout_width="match_parent"-->
-					<!--android:layout_height="wrap_content"-->
-					<!--android:layout_margin="@dimen/padding_standard">-->
-				<!--<EditText-->
-						<!--android:id="@+id/exe_edit_name"-->
-						<!--android:layout_width="match_parent"-->
-						<!--android:layout_height="wrap_content"-->
-						<!--android:hint="@string/exer_name"-->
-						<!--android:textSize="20sp"/>-->
-			<!--</android.support.design.widget.TextInputLayout>-->
-
-			<!--<ua.com.sofon.workoutlogger.components.MultiSelectTextView-->
-					<!--android:id="@+id/exe_edit_muscle_groups"-->
-					<!--android:layout_width="match_parent"-->
-					<!--android:layout_height="wrap_content"-->
-					<!--android:layout_marginLeft="@dimen/padding_standard"-->
-					<!--android:layout_marginRight="@dimen/padding_standard"-->
-					<!--android:layout_marginBottom="@dimen/padding_standard"-->
-					<!--android:textStyle="bold"-->
-					<!--android:hint="@string/exer_groups_not_specified"-->
-					<!--android:background="@drawable/image_button_selector"-->
-					<!--android:textSize="16sp"/>-->
-		<!--</LinearLayout>-->
-
-		<!--<android.support.design.widget.TextInputLayout-->
-				<!--android:id="@+id/exe_edit_description_input"-->
-				<!--android:layout_width="0dp"-->
-				<!--android:layout_height="wrap_content"-->
-				<!--android:layout_margin="@dimen/padding_standard"-->
-				<!--app:layout_constraintLeft_toLeftOf="parent"-->
-				<!--app:layout_constraintRight_toRightOf="parent"-->
-				<!--app:layout_constraintTop_toBottomOf="@+id/linearLayout">-->
-
-			<!--<EditText-->
-					<!--android:id="@+id/exe_edit_description"-->
-					<!--android:layout_width="match_parent"-->
-					<!--android:layout_height="wrap_content"-->
-					<!--android:ems="10"-->
-					<!--android:gravity="top"-->
-					<!--android:hint="@string/exer_description"-->
-					<!--android:inputType="textMultiLine"-->
-					<!--android:minHeight="100dp"-->
-					<!--android:textSize="16sp"/>-->
-		<!--</android.support.design.widget.TextInputLayout>-->
-
-	<!--</android.support.constraint.ConstraintLayout>-->
-<!--</ScrollView>-->

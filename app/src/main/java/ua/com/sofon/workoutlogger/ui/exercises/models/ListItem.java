@@ -111,11 +111,28 @@ public class ListItem {
 		return isFavorite;
 	}
 
+	public void setFavorite(boolean favorite) {
+		isFavorite = favorite;
+	}
+
 	public void addToFavorites() {
 		isFavorite = true;
 	}
 
 	public void removeFromFavorites() {
 		isFavorite = false;
+	}
+
+	@Override
+	public String toString() {
+		return "ListItem{" +
+				"id=" + id +
+				", type=" + type +
+				", name='" + name + '\'' +
+				", imagePath='" + imagePath + '\'' +
+				", isFavorite=" + isFavorite +
+				", isExpanded=" + isExpanded +
+				", children=" + children +
+				'}';
 	}
 }

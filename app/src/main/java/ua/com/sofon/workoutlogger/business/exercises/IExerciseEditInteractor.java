@@ -16,6 +16,7 @@
 
 package ua.com.sofon.workoutlogger.business.exercises;
 
+import rx.Single;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 
 /**
@@ -24,11 +25,7 @@ import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
  */
 public interface IExerciseEditInteractor {
 
-	ExerciseDataModel loadData(long id);
-//	long saveData(ExerciseDataModel data);
-
-	boolean validateData(ExerciseDataModel data);
-
-	long addExercise(ExerciseDataModel data);
-	void updateExercise(ExerciseDataModel data);
+	Single<ExerciseDataModel> loadData(long id);
+	Single<ExerciseDataModel> addExercise(ExerciseDataModel data);
+	Single<ExerciseDataModel> updateExercise(ExerciseDataModel data);
 }

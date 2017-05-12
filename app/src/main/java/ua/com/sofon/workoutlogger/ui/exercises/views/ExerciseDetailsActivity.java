@@ -16,6 +16,7 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.views;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -42,12 +44,24 @@ import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.WLApplication;
 import ua.com.sofon.workoutlogger.dagger.exercises.ExerciseDetailsModule;
 import ua.com.sofon.workoutlogger.ui.exercises.presenter.IExerciseDetailsPresenter;
+import ua.com.sofon.workoutlogger.util.UIUtil;
 
 /**
  * Created on 27.03.2017.
  * @author Dimowner
  */
 public class ExerciseDetailsActivity extends AppCompatActivity implements IExerciseDetailsView {
+
+	public static final int REQ_CODE_EDIT_EXERCISE = 5;
+
+	public static final String EXTRAS_KEY_ACTION = "action";
+	public static final String EXTRAS_KEY_EXERCISE_ID = "exercise_id";
+
+	public static final int ACTION_UNKNOWN = 0;
+	public static final int ACTION_UPDATED = 1;
+	public static final int ACTION_DELETED = 2;
+	public static final int ACTION_ADDED_TO_FAVORITES = 3;
+	public static final int ACTION_REMOVED_FROM_FAVORITES = 4;
 
 	@Inject
 	IExerciseDetailsPresenter iExerciseDetailsPresenter;
@@ -61,9 +75,14 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 	@BindView(R.id.exe_details_groups) TextView txtMuscleGroups;
 	@BindView(R.id.exe_details_name) TextView txtName;
 	@BindView(R.id.exe_details_description) TextView txtDescription;
+	@BindView(R.id.toolbar_progress) ProgressBar progressBar;
 
 	private static final long ID_UNKNOWN = -1;
 	private long id = ID_UNKNOWN;
+
+	private int action = ACTION_UNKNOWN;
+
+	private boolean isFavorite = false;
 
 
 	@Override
@@ -134,27 +153,45 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.exercise_details_menu, menu);
+		if (id == ID_UNKNOWN) {
+			menu.findItem(R.id.action_add_to_fev).setVisible(false);
+			menu.findItem(R.id.action_youtube_play).setVisible(false);
+			menu.findItem(R.id.action_edit).setVisible(false);
+			menu.findItem(R.id.action_delete).setVisible(false);
+		}
+		if (isFavorite) {
+			menu.findItem(R.id.action_add_to_fev).setIcon(R.drawable.star_white);
+		} else {
+			menu.findItem(R.id.action_add_to_fev).setIcon(R.drawable.star_outline_white);
+		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
 		switch (item.getItemId()) {
 			case android.R.id.home:
+				intent = new Intent();
+				intent.putExtra(EXTRAS_KEY_ACTION, action);
+				setResult(RESULT_CANCELED, intent);
 				finish();
 				break;
 			case R.id.action_add_to_fev:
 				iExerciseDetailsPresenter.reverseFavorite(id);
 				break;
-			case R.id.action_add_youtube_video:
+			case R.id.action_youtube_play:
 				break;
 			case R.id.action_edit:
-				Intent intent = new Intent(getApplicationContext(), ExerciseEditActivity.class);
+				intent = new Intent(getApplicationContext(), ExerciseEditActivity.class);
 				intent.putExtra(ExercisesActivity.EXTRAS_KEY_EXERCISE_ID, id);
-				startActivity(intent);
+				startActivityForResult(intent, REQ_CODE_EDIT_EXERCISE);
 				break;
 			case R.id.action_delete:
-				iExerciseDetailsPresenter.clickDeleteExercise(id);
+				UIUtil.showWarningDialog(this, R.string.exer_delete_this_exe,
+						(dialog, which) -> iExerciseDetailsPresenter.clickDeleteExercise(id),
+						(dialog, which) -> dialog.cancel()
+				);
 				break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -168,13 +205,53 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 	}
 
 	@Override
-	public void showProgress() {
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Timber.v("onActivityResult req = " + requestCode + " res = " + requestCode);
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == RESULT_OK
+				&& requestCode == REQ_CODE_EDIT_EXERCISE
+				&& id != ID_UNKNOWN) {
+			Timber.v("LoadExerciseData id = " + id);
+			action = ACTION_UPDATED;
+			iExerciseDetailsPresenter.loadExerciseData(id);
+		}
+	}
 
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Timber.v("onBackPressed");
+		Intent intent = new Intent();
+		intent.putExtra(EXTRAS_KEY_ACTION, action);
+		setResult(RESULT_CANCELED, intent);
+	}
+
+	@Override
+	public void showProgress() {
+		Timber.v("ShowProgress");
+		progressBar.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void hideProgress() {
+		Timber.v("HideProgress");
+		progressBar.setVisibility(View.GONE);
+	}
 
+	@Override
+	public void showError() {
+		Timber.v("showError");
+		toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+		fab.setVisibility(View.GONE);
+		ivImage.setVisibility(View.GONE);
+		txtName.setVisibility(View.GONE);
+		txtMuscleGroups.setVisibility(View.GONE);
+		txtDescription.setVisibility(View.GONE);
+		findViewById(R.id.exe_details_group_content).setVisibility(View.GONE);
+
+		findViewById(R.id.exe_details_error).setVisibility(View.VISIBLE);
+		id = ID_UNKNOWN;
+		invalidateOptionsMenu();
 	}
 
 	@Override
@@ -202,7 +279,30 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 	}
 
 	@Override
-	public void deleteExerciseClicked() {
+	public void setFavorite(boolean fav) {
+		isFavorite = fav;
+		invalidateOptionsMenu();
+	}
+
+	@Override
+	public void exerciseDeleted() {
+		Timber.v("exerciseDeleted");
+		Intent intent = new Intent();
+		intent.putExtra(EXTRAS_KEY_ACTION, ACTION_DELETED);
+		intent.putExtra(EXTRAS_KEY_EXERCISE_ID, id);
+		setResult(RESULT_OK, intent);
 		finish();
+	}
+
+	@Override
+	public void favoritesUpdated(boolean fav) {
+		Timber.v("favoritesUpdated bool = " + fav);
+		isFavorite = fav;
+		invalidateOptionsMenu();
+		if (action == ACTION_UNKNOWN
+				|| action == ACTION_ADDED_TO_FAVORITES
+				|| action == ACTION_REMOVED_FROM_FAVORITES) {
+			action = fav ? ACTION_ADDED_TO_FAVORITES : ACTION_REMOVED_FROM_FAVORITES;
+		}
 	}
 }

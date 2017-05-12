@@ -16,11 +16,13 @@
 
 package ua.com.sofon.workoutlogger.ui.main.view;
 
+import ua.com.sofon.workoutlogger.IBaseView;
+
 /**
  * Created on 08.03.2017.
  * @author Dimowner
  */
-public interface IMainView {
+public interface IMainView extends IBaseView {
 
 	void startHomeActivity();
 	void startExercisesActivity();

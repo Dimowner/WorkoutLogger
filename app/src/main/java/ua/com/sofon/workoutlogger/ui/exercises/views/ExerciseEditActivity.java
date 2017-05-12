@@ -16,14 +16,22 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.views;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -55,9 +63,12 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 	@BindView(R.id.exe_edit_muscle_groups) MultiSelectTextView txtMuscleGroups;
 	@BindView(R.id.exe_edit_name) EditText txtName;
 	@BindView(R.id.exe_edit_description) EditText txtDescription;
+	@BindView(R.id.toolbar_progress) ProgressBar progressBar;
 
 	private static final long ID_UNKNOWN = -1;
 	private long id = ID_UNKNOWN;
+
+	private boolean loadingError = false;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,19 +100,27 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 		txtMuscleGroups.setData(names, ids);
 		txtMuscleGroups.setTitle(getString(R.string.title_muscle_groups));
 		txtMuscleGroups.showNeutralButton(true);
-		txtMuscleGroups.setOnItemsSelectedListener(new MultiSelectTextView.OnItemsSelectedListener() {
-			@Override
-			public void OnItemsSelected(int[] ids, String[] names) {
+		txtMuscleGroups.setOnItemsSelectedListener((ids1, names1) -> {
 //				mExercise.setGroups(ids);
 //				TODO: update groups
-			}
 		});
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		Timber.v("onCreateOptionsMenu");
 		getMenuInflater().inflate(R.menu.exercise_edit_menu, menu);
+		if (loadingError) {
+			menu.findItem(R.id.action_accept).setVisible(false);
+			menu.findItem(R.id.action_add_youtube_video).setVisible(false);
+		}
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		Timber.v("onPrepareOptionsMenu");
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
@@ -134,12 +153,32 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 
 	@Override
 	public void showProgress() {
-
+		Timber.v("ShowProgress");
+		progressBar.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void hideProgress() {
+		Timber.v("HideProgress");
+		progressBar.setVisibility(View.GONE);
+	}
 
+	@Override
+	public void showError() {
+		Timber.e("showError");
+//		Snackbar snack = Snackbar.make(coordinatorLayout, getString(R.string.common_error), Snackbar.LENGTH_LONG);
+//		View view = snack.getView();
+//		TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+//		tv.setTextColor(Color.WHITE);
+//		snack.show();
+		findViewById(R.id.exe_edit_name_container).setVisibility(View.GONE);
+		findViewById(R.id.exe_edit_description_input).setVisibility(View.GONE);
+		ivImage.setVisibility(View.GONE);
+		txtMuscleGroups.setVisibility(View.GONE);
+		txtDescription.setVisibility(View.GONE);
+		findViewById(R.id.exe_edit_error).setVisibility(View.VISIBLE);
+		loadingError = true;
+		invalidateOptionsMenu();
 	}
 
 	@Override
@@ -168,11 +207,15 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 
 	@Override
 	public void exerciseUpdated() {
+		setResult(RESULT_OK);
 		finish();
 	}
 
 	@Override
-	public void exerciseAdded() {
+	public void exerciseAdded(ExerciseDataModel model) {
+		Intent intent = new Intent();
+		intent.putExtra("result", model);
+		setResult(RESULT_OK, intent);
 		finish();
 	}
 

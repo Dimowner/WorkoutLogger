@@ -30,7 +30,9 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
 import ua.com.sofon.workoutlogger.R;
+import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity;
 
 /**
@@ -41,6 +43,8 @@ public class ExercisesActivity extends BaseActivity {
 
 	public static final String EXTRAS_KEY_EXERCISE_ID = "exercise_id";
 
+	public static final int REQ_CODE_ADD_EXE = 1;
+
 	private ExercisesFragment exercisesFragment;
 	private ExercisesFragment fevExercisesFragment;
 
@@ -50,8 +54,7 @@ public class ExercisesActivity extends BaseActivity {
 		setContentView(R.layout.activity_exercises);
 
 		if (savedInstanceState == null) {
-			exercisesFragment = ExercisesFragment.newInstance(ExercisesFragment.VIEW_TYPE_ALL_EXERCISES);
-			fevExercisesFragment = ExercisesFragment.newInstance(ExercisesFragment.VIEW_TYPE_FEV_EXERCISES);
+			initFragments();
 			initViewpager();
 		}
 	}
@@ -61,12 +64,21 @@ public class ExercisesActivity extends BaseActivity {
 		return NAVDRAWER_ITEM_EXERCISES;
 	}
 
+	private void initFragments() {
+		exercisesFragment = ExercisesFragment.newInstance(ExercisesFragment.VIEW_TYPE_ALL_EXERCISES);
+		fevExercisesFragment = ExercisesFragment.newInstance(ExercisesFragment.VIEW_TYPE_FEV_EXERCISES);
+
+		//Listeners needs to update fragment state when another fragment changes his state.
+		exercisesFragment.setOnListItemUpdateListener(id -> fevExercisesFragment.buildList());
+		fevExercisesFragment.setOnListItemUpdateListener(id -> exercisesFragment.updateListItem(id));
+	}
+
 	private void initViewpager() {
 		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 		if (viewPager != null) {
 			CustomTabsAdapter adapter = new CustomTabsAdapter(getSupportFragmentManager());
-			adapter.addFragment(exercisesFragment, "All exercises");
-			adapter.addFragment(fevExercisesFragment, "Favorites");
+			adapter.addFragment(exercisesFragment, getString(R.string.exe_activity_all_exercises));
+			adapter.addFragment(fevExercisesFragment, getString(R.string.exe_activity_favorites));
 			viewPager.setAdapter(adapter);
 			TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 			if (tabLayout != null) {
@@ -99,10 +111,23 @@ public class ExercisesActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_add_exercise:
-				startActivity(new Intent(getApplicationContext(), ExerciseEditActivity.class));
+				startActivityForResult(new Intent(getApplicationContext(), ExerciseEditActivity.class), REQ_CODE_ADD_EXE);
 				break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == RESULT_OK) {
+			switch (requestCode) {
+				case REQ_CODE_ADD_EXE:
+					ExerciseDataModel dataModel = data.getParcelableExtra("result");
+					exercisesFragment.addItemToList(dataModel);
+					break;
+			}
+		}
 	}
 
 	/**

@@ -15,20 +15,22 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				  android:layout_width="match_parent"
-				  android:layout_height="match_parent">
-
-	<android.support.v7.widget.RecyclerView
-			android:id="@+id/recycler_view"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:scrollbars="vertical"/>
+<android.support.v7.widget.Toolbar
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:id="@+id/toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="?actionBarSize"
+		android:background="?attr/colorPrimary"
+		app:titleTextAppearance="@style/Toolbar.TitleText"
+		app:popupTheme="@style/AppTheme.PopupOverlay"
+		app:contentInsetStart="?actionBarInsetStart">
 
 	<ProgressBar
-			android:id="@+id/progress_view"
+			android:id="@+id/toolbar_progress"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_gravity="center"
+			android:layout_gravity="right"
 			android:visibility="gone"/>
-</FrameLayout>
+
+</android.support.v7.widget.Toolbar>

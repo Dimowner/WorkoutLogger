@@ -18,7 +18,9 @@ package ua.com.sofon.workoutlogger.business.exercises;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import rx.Single;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.IExercisesRepository;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ListItem;
@@ -36,33 +38,42 @@ public class ExercisesInteractor implements IExercisesInteractor {
 	}
 
 	@Override
-	public List<ListItem> getAllExercises() {
-
-		List<ExerciseModel> data = iExercisesRepository.loadAllExercises();
-		List<ListItem> listData = new ArrayList<>();
-
-		for (ExerciseModel e : data) {
-			ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite());
-			listData.add(item);
-		}
-		return listData;
+	public Single<List<ListItem>> getAllExercises() {
+		return iExercisesRepository.loadAllExercises()
+				.delay(500, TimeUnit.MILLISECONDS)
+				.map(data -> {
+						List<ListItem> listData = new ArrayList<>();
+						for (ExerciseModel e : data) {
+							ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite());
+							listData.add(item);
+						}
+						return listData;
+				});
 	}
 
 	@Override
-	public List<ListItem> getFavoritesExercises() {
-
-		List<ExerciseModel> data = iExercisesRepository.loadFavoritesExercises();
-		List<ListItem> listData = new ArrayList<>();
-
-		for (ExerciseModel e : data) {
-			ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite());
-			listData.add(item);
-		}
-		return listData;
+	public Single<ListItem> getExercise(long id) {
+		return iExercisesRepository.loadExercise(id)
+				.map(e -> new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite()));
 	}
 
 	@Override
-	public boolean reverseFavorite(long id) {
+	public Single<List<ListItem>> getFavoritesExercises() {
+		return iExercisesRepository.loadFavoritesExercises()
+				.delay(500, TimeUnit.MILLISECONDS)
+				.map(data -> {
+						List<ListItem> listData = new ArrayList<>();
+
+						for (ExerciseModel e : data) {
+							ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite());
+							listData.add(item);
+						}
+						return listData;
+				});
+	}
+
+	@Override
+	public Single<Boolean> reverseFavorite(long id) {
 		return iExercisesRepository.reverseFavorite(id);
 	}
 }

@@ -16,6 +16,9 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Arrays;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 
@@ -23,7 +26,7 @@ import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
  * Created on 02.04.2017.
  * @author Dimowner
  */
-public class ExerciseDataModel {
+public class ExerciseDataModel implements Parcelable {
 
 	private long id;
 
@@ -39,7 +42,8 @@ public class ExerciseDataModel {
 
 	private boolean isFavorite;
 
-	public ExerciseDataModel(long id, int[] groups, String name, String description, String imagePath, String videoPath, boolean isFavorite) {
+	public ExerciseDataModel(long id, int[] groups, String name, String description,
+									 String imagePath, String videoPath, boolean isFavorite) {
 		this.id = id;
 		this.groups = groups;
 		this.name = name;
@@ -47,6 +51,16 @@ public class ExerciseDataModel {
 		this.imagePath = imagePath;
 		this.videoPath = videoPath;
 		this.isFavorite = isFavorite;
+	}
+
+	public ExerciseDataModel(ExerciseModel model) {
+		id = model.getId();
+		groups = model.getGroups();
+		name = model.getName();
+		description = model.getDescription();
+		imagePath = model.getImagePath();
+		videoPath = model.getVideoPath();
+		isFavorite = model.isFavorite();
 	}
 
 	public long getId() {
@@ -106,8 +120,49 @@ public class ExerciseDataModel {
 	}
 
 	public ExerciseModel toExerciseModel() {
-		return new ExerciseModel(id, groups, name, description, isFavorite);
+		return new ExerciseModel(id, groups, name, description, imagePath, videoPath, isFavorite);
 	}
+
+	//----- START Parcelable implementation ----------
+	public ExerciseDataModel(Parcel in) {
+		id = in.readLong();
+		int groupsSize = in.readInt();
+		groups = new int[groupsSize];
+		in.readIntArray(groups);
+		String[] data = new String[4];
+		in.readStringArray(data);
+		name = data[0];
+		description = data[1];
+		imagePath = data[2];
+		videoPath = data[3];
+		boolean boolData[] = new boolean[1];
+		in.readBooleanArray(boolData);
+		isFavorite = boolData[0];
+	}
+
+	public int describeContents() {
+		return 0;
+	}
+
+	public void writeToParcel(Parcel out, int flags) {
+		out.writeLong(id);
+		out.writeInt(groups.length);
+		out.writeIntArray(groups);
+		out.writeStringArray(new String[] {name, description, imagePath, videoPath});
+		out.writeBooleanArray(new boolean[] {isFavorite});
+	}
+
+	public static final Parcelable.Creator<ExerciseDataModel> CREATOR
+			= new Parcelable.Creator<ExerciseDataModel>() {
+		public ExerciseDataModel createFromParcel(Parcel in) {
+			return new ExerciseDataModel(in);
+		}
+
+		public ExerciseDataModel[] newArray(int size) {
+			return new ExerciseDataModel[size];
+		}
+	};
+	//----- END Parcelable implementation ----------
 
 	@Override
 	public String toString() {

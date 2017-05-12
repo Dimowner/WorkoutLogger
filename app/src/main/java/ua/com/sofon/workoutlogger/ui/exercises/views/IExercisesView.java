@@ -18,25 +18,22 @@ package ua.com.sofon.workoutlogger.ui.exercises.views;
 
 import java.util.List;
 
+import ua.com.sofon.workoutlogger.IBaseView;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ListItem;
 
 /**
  * Created on 08.03.2017.
  * @author Dimowner
  */
-public interface IExercisesView {
+public interface IExercisesView extends IBaseView {
 
 	void showProgress();
 	void hideProgress();
 
 	void showLoadError(String error);
 	void showExercises(List<ListItem> list);
+	void updateExercise(ListItem item);
 	void switchToFevExercises();
 	void expandGroup();
 	void collapseGroup();
-//	void addToFavorites();
-//	void removeFromFavorites();
-//	void openExerciseDetails();
-//	void searchExrcise(String text);
-//	void addNewExercise();
 }

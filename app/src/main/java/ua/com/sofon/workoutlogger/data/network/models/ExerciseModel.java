@@ -18,6 +18,10 @@ package ua.com.sofon.workoutlogger.data.network.models;
 
 import android.support.annotation.NonNull;
 
+import java.util.Arrays;
+
+import ua.com.sofon.workoutlogger.data.realm.Exercise;
+
 /**
  * Created on 08.03.2017.
  * @author Dimowner
@@ -29,14 +33,29 @@ public class ExerciseModel {
 	protected String name;
 	protected String description;
 	protected boolean isFavorite;
-//	TODO: Add photos
+	private String imagePath;
+	private String videoPath;
 
-	public ExerciseModel(long id, @NonNull int[] groups, @NonNull String name, @NonNull String description, boolean isFavorite) {
+	public ExerciseModel(long id, @NonNull int[] groups, @NonNull String name,
+								@NonNull String description, String imagePath,
+								String videoPath, boolean isFavorite) {
 		this.id = id;
 		this.groups = groups;
 		this.name = name;
 		this.description = description;
+		this.imagePath = imagePath;
+		this.videoPath = videoPath;
 		this.isFavorite = isFavorite;
+	}
+
+	public ExerciseModel(Exercise e) {
+		this.id = e.getId();
+		this.groups = e.getGroupsArray();
+		this.name = e.getName();
+		this.description = e.getDescription();
+		this.imagePath = e.getImagePath();
+		this.videoPath = e.getVideoPath();
+		this.isFavorite = e.isFavorite();
 	}
 
 	public long getId() {
@@ -59,10 +78,24 @@ public class ExerciseModel {
 		return isFavorite;
 	}
 
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public String getVideoPath() {
+		return videoPath;
+	}
+
 	@Override
 	public String toString() {
-		return "ExerciseModel{ id = " + id
-				+ ", groups size = " + groups.length
-				+ ", name = " + name + ", description = " + description + "}";
+		return "ExerciseModel{" +
+				"id=" + id +
+				", groups=" + Arrays.toString(groups) +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", isFavorite=" + isFavorite +
+				", imagePath='" + imagePath + '\'' +
+				", videoPath='" + videoPath + '\'' +
+				'}';
 	}
 }

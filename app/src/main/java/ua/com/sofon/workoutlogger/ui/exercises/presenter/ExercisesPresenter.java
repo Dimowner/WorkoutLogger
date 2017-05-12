@@ -18,7 +18,11 @@ package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
 
+import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
+import ua.com.sofon.workoutlogger.IBaseView;
 import ua.com.sofon.workoutlogger.business.exercises.IExercisesInteractor;
 import ua.com.sofon.workoutlogger.ui.exercises.views.IExercisesView;
 
@@ -40,8 +44,8 @@ public class ExercisesPresenter implements IExercisesPresenter {
 	}
 
 	@Override
-	public void bindView(@NonNull IExercisesView iAllExercisesView) {
-		this.iAllExercisesView = iAllExercisesView;
+	public void bindView(@NonNull IBaseView view) {
+		this.iAllExercisesView = (IExercisesView)view;
 	}
 
 	@Override
@@ -52,19 +56,46 @@ public class ExercisesPresenter implements IExercisesPresenter {
 	@Override
 	public void loadAllExercises() {
 		iAllExercisesView.showProgress();
-		iAllExercisesView.showExercises(iExercisesInteractor.getAllExercises());
-//		iAllExercisesView.buildList(iExercisesInteractor.getAllExercises())
-
+		iExercisesInteractor.getAllExercises()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(data -> {
+					iAllExercisesView.showExercises(data);
+					iAllExercisesView.hideProgress();
+				}, throwable -> {
+					Timber.e(throwable);
+					iAllExercisesView.showLoadError(throwable.getMessage());
+				});
 	}
 
 	@Override
 	public void loadFavoritesExercises() {
 		iAllExercisesView.showProgress();
-		iAllExercisesView.showExercises(iExercisesInteractor.getFavoritesExercises());
+		iExercisesInteractor.getFavoritesExercises()
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(data -> {
+					iAllExercisesView.showExercises(data);
+					iAllExercisesView.hideProgress();
+				}, throwable -> {
+					Timber.e(throwable);
+					iAllExercisesView.showLoadError(throwable.getMessage());
+				});
 	}
 
 	@Override
-	public boolean reverseFavorite(int id) {
+	public void updateListItem(long id) {
+		iAllExercisesView.showProgress();
+		iExercisesInteractor.getExercise(id)
+				.subscribe(listItem -> {
+					iAllExercisesView.updateExercise(listItem);
+					iAllExercisesView.hideProgress();
+				}, throwable -> {
+					Timber.e(throwable);
+					iAllExercisesView.showLoadError(throwable.getMessage());
+				});
+	}
+
+	@Override
+	public Single<Boolean> reverseFavorite(int id) {
 //		TODO: update view here
 		return iExercisesInteractor.reverseFavorite(id);
 	}

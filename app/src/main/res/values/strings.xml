@@ -26,6 +26,9 @@
 	<string name="exer_delete_this_exe">Delete this exercise?</string>
 	<string name="exer_groups_not_specified">Groups not specified</string>
 
+	<string name="exe_activity_all_exercises">All exercises</string>
+	<string name="exe_activity_favorites">Favorites</string>
+
 	<string name="workoutpos_name">Name</string>
 	<string name="workoutpos_date">Date</string>
 	<string name="workoutpos_weight">Weight</string>
@@ -122,4 +125,5 @@
 	<string name="log_logs_will_be_recorded">Logs are recording</string>
 	<string name="log_no_data">No data</string>
 
+	<string name="common_error">Unexpected error was occurred</string>
 </resources>

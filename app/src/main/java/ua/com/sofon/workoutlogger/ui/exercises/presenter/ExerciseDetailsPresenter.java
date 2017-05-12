@@ -18,13 +18,15 @@ package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
 import java.util.Arrays;
+
+import rx.android.schedulers.AndroidSchedulers;
+import ua.com.sofon.workoutlogger.IBaseView;
 import ua.com.sofon.workoutlogger.business.exercises.IExerciseDetailsInteractor;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 import ua.com.sofon.workoutlogger.ui.exercises.views.IExerciseDetailsView;
 
 /**
  * Created on 04.04.2017.
- *
  * @author Dimowner
  */
 public class ExerciseDetailsPresenter implements IExerciseDetailsPresenter {
@@ -37,8 +39,8 @@ public class ExerciseDetailsPresenter implements IExerciseDetailsPresenter {
 	}
 
 	@Override
-	public void bindView(@NonNull IExerciseDetailsView iExerciseDetailsView) {
-		this.iExerciseDetailsView = iExerciseDetailsView;
+	public void bindView(@NonNull IBaseView view) {
+		this.iExerciseDetailsView = (IExerciseDetailsView) view;
 	}
 
 	@Override
@@ -53,8 +55,13 @@ public class ExerciseDetailsPresenter implements IExerciseDetailsPresenter {
 
 	@Override
 	public void reverseFavorite(long id) {
-//		todo: say update favorites -> after update view
-		iExerciseDetailsInteractor.reverseFavorite(id);
+		iExerciseDetailsView.showProgress();
+		iExerciseDetailsInteractor.reverseFavorite(id)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(bool -> {
+						iExerciseDetailsView.hideProgress();
+						iExerciseDetailsView.favoritesUpdated(bool);
+				}, t -> iExerciseDetailsView.hideProgress());
 	}
 
 	@Override
@@ -64,20 +71,43 @@ public class ExerciseDetailsPresenter implements IExerciseDetailsPresenter {
 
 	@Override
 	public void clickDeleteExercise(long id) {
-		iExerciseDetailsInteractor.deleteExercise(id);
-		iExerciseDetailsView.deleteExerciseClicked();
+		iExerciseDetailsView.showProgress();
+		iExerciseDetailsInteractor.deleteExercise(id)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(
+						aBoolean -> {
+								iExerciseDetailsView.hideProgress();
+								iExerciseDetailsView.exerciseDeleted();
+						},
+						this::handleErrorLoadExerciseData
+				);
+
 	}
 
 	@Override
 	public void loadExerciseData(long id) {
-		ExerciseDataModel data = iExerciseDetailsInteractor.loadData(id);
-		if (data != null) {
-			if (data.getImagePath() != null && !data.getImagePath().isEmpty()) {
-				iExerciseDetailsView.setImage(data.getImagePath());
-			}
-			iExerciseDetailsView.setName(data.getName());
-			iExerciseDetailsView.setDescription(data.getDescription());
-			iExerciseDetailsView.selectGroup(Arrays.toString(data.getGroups()));
+		iExerciseDetailsView.showProgress();
+		iExerciseDetailsInteractor.loadData(id)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(
+						this::handleSuccessLoadExerciseData,
+						this::handleErrorLoadExerciseData
+				);
+	}
+
+	private void handleSuccessLoadExerciseData(@NonNull ExerciseDataModel data) {
+		if (data.getImagePath() != null && !data.getImagePath().isEmpty()) {
+			iExerciseDetailsView.setImage(data.getImagePath());
 		}
+		iExerciseDetailsView.setName(data.getName());
+		iExerciseDetailsView.setDescription(data.getDescription());
+		iExerciseDetailsView.selectGroup(Arrays.toString(data.getGroups()));
+		iExerciseDetailsView.setFavorite(data.isFavorite());
+		iExerciseDetailsView.hideProgress();
+	}
+
+	private void handleErrorLoadExerciseData(Throwable throwable) {
+		iExerciseDetailsView.hideProgress();
+		iExerciseDetailsView.showError();
 	}
 }

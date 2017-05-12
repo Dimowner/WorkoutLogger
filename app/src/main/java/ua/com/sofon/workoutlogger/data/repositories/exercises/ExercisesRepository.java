@@ -18,10 +18,11 @@ package ua.com.sofon.workoutlogger.data.repositories.exercises;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import rx.Single;
+import timber.log.Timber;
 import ua.com.sofon.workoutlogger.data.realm.ExeGroup;
 import ua.com.sofon.workoutlogger.data.realm.Exercise;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
@@ -33,177 +34,158 @@ import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 public class ExercisesRepository implements IExercisesRepository {
 
 	@Override
-	public List<ExerciseModel> loadAllExercises() {
-//		TODO: load exercise async
+	public Single<List<ExerciseModel>> loadAllExercises() {
 		List<ExerciseModel> exes = new ArrayList<>();
 		Realm realm = Realm.getDefaultInstance();
 		try {
-			RealmResults<Exercise> realmResults = realm.where(Exercise.class).findAll();
+			RealmResults<Exercise> realmResults = realm.where(Exercise.class).findAllAsync();
 			for (Exercise e : realmResults) {
-				ExerciseModel model = new ExerciseModel((int)e.getId(), e.getGroupsArray(), e.getName(), e.getDescription(), e.isFavorite());
+				ExerciseModel model = new ExerciseModel(e);
 				exes.add(model);
 			}
 		} finally {
 			realm.close();
 		}
-		return exes;
+		return Single.just(exes);
 	}
 
 	@Override
-	public List<ExerciseModel> loadFavoritesExercises() {
-//		TODO: fix load fev
+	public Single<List<ExerciseModel>> loadFavoritesExercises() {
 		List<ExerciseModel> exes = new ArrayList<>();
 		Realm realm = Realm.getDefaultInstance();
 		try {
-			RealmResults<Exercise> realmResults = realm.where(Exercise.class).equalTo(Exercise.IS_FAVORITE, true).findAll();
+			RealmResults<Exercise> realmResults = realm.where(Exercise.class).equalTo(Exercise.IS_FAVORITE, true).findAllAsync();
 			for (Exercise e : realmResults) {
-				ExerciseModel model = new ExerciseModel((int)e.getId(), e.getGroupsArray(), e.getName(), e.getDescription(), e.isFavorite());
+				ExerciseModel model = new ExerciseModel(e);
 				exes.add(model);
 			}
 		} finally {
 			realm.close();
 		}
-		return exes;
+		return Single.just(exes);
 	}
 
 	@Override
-	public ExerciseModel loadExercise(long id) {
-//		TODO: load exercise async use RxJava for asynk
+	public Single<ExerciseModel> loadExercise(long id) {
 		Realm realm = Realm.getDefaultInstance();
 		try {
-			RealmResults<Exercise> realmResults = realm.where(Exercise.class).equalTo(Exercise.ID, id).findAll();
-			return exerciseToExerciseModel(realmResults.get(0));
-
+			RealmResults<Exercise> r = realm.where(Exercise.class).equalTo(Exercise.ID, id).findAllAsync();
+			return Single.just(new ExerciseModel(r.get(0)));
 		} finally {
 			realm.close();
 		}
 	}
 
 	@Override
-	public long addExercise(final ExerciseModel data) {
+	public Single<ExerciseModel> addExercise(final ExerciseModel data) {
+		Timber.v("addExercise = " + data.toString());
 		Realm realm = Realm.getDefaultInstance();
 		try {
-			realm.executeTransaction(new Realm.Transaction() {
-				@Override
-				public void execute(Realm realm) {
-					Exercise exercise = new Exercise();
-					exercise.setId(getNextId(realm));
+			realm.beginTransaction();
+			Exercise exercise = new Exercise();
+			exercise.setId(getNextId(realm));
 
-					RealmList<ExeGroup> list = new RealmList<>();
-					int[] groups = data.getGroups();
-					for (int i = 0; i < groups.length; i++) {
-						ExeGroup exeGroup = realm.createObject(ExeGroup.class);
-						exeGroup.setGroup(groups[i]);
-						list.add(exeGroup);
-					}
-					exercise.setGroups(list);
+			RealmList<ExeGroup> list = new RealmList<>();
+			int[] groups = data.getGroups();
+			for (int i = 0; i < groups.length; i++) {
+				ExeGroup exeGroup = realm.createObject(ExeGroup.class);
+				exeGroup.setGroup(groups[i]);
+				list.add(exeGroup);
+			}
+			exercise.setGroups(list);
 
-					exercise.setName(data.getName());
-					exercise.setDescription(data.getDescription());
-					exercise.setFavorite(false);
+			exercise.setName(data.getName());
+			exercise.setDescription(data.getDescription());
+			exercise.setFavorite(false);
 
-					realm.copyToRealmOrUpdate(exercise);
-				}
-			});
+			Exercise e = realm.copyToRealmOrUpdate(exercise);
+			realm.commitTransaction();
+
+			return Single.just(e).map(ExerciseModel::new);
 		} finally {
 			realm.close();
 		}
-		return 0;
 	}
 
 	@Override
-	public void updateExercise(final ExerciseModel data) {
+	public Single<ExerciseModel> updateExercise(final ExerciseModel data) {
 		Realm realm = Realm.getDefaultInstance();
 		try {
 			final RealmResults<Exercise> results = realm.where(Exercise.class)
 					.equalTo(Exercise.ID, data.getId()).findAll();
-			realm.executeTransaction(new Realm.Transaction() {
-				@Override
-				public void execute(Realm realm) {
-					Exercise e = results.get(0);
+			realm.beginTransaction();
+			Exercise e = results.get(0);
 
-					int[] groups = data.getGroups();
-					//delete unselected groups
-					for (int i = e.getGroups().size() - 1; i >= 0; i--) {
-						boolean contains = false;
-						for (int j = 0; j < groups.length; j++) {
-							if (e.getGroups().get(i).getGroup() == groups[j]) {
-								contains = true;
-								break;
-							}
-						}
-						if (!contains) {
-							e.getGroups().get(i).deleteFromRealm();
-						}
-					}
-
-					//add new selected groups
-					for (int i = 0; i < groups.length; i++) {
-						boolean contains = false;
-						for (int j = 0; j < e.getGroups().size(); j++) {
-							if (groups[i] == e.getGroups().get(j).getGroup()) {
-								contains = true;
-								break;
-							}
-						}
-						if (!contains) {
-							ExeGroup exeGroup = realm.createObject(ExeGroup.class);
-							exeGroup.setGroup(groups[i]);
-							e.getGroups().add(exeGroup);
-						}
-					}
-
-					if (!e.getName().equals(data.getName())) {
-						e.setName(data.getName());
-					}
-					if (!e.getDescription().equals(data.getDescription())) {
-						e.setDescription(data.getDescription());
+			int[] groups = data.getGroups();
+			//delete unselected groups
+			for (int i = e.getGroups().size() - 1; i >= 0; i--) {
+				boolean contains = false;
+				for (int j = 0; j < groups.length; j++) {
+					if (e.getGroups().get(i).getGroup() == groups[j]) {
+						contains = true;
+						break;
 					}
 				}
-			});
+				if (!contains) {
+					e.getGroups().get(i).deleteFromRealm();
+				}
+			}
+
+			//add new selected groups
+			for (int i = 0; i < groups.length; i++) {
+				boolean contains = false;
+				for (int j = 0; j < e.getGroups().size(); j++) {
+					if (groups[i] == e.getGroups().get(j).getGroup()) {
+						contains = true;
+						break;
+					}
+				}
+				if (!contains) {
+					ExeGroup exeGroup = realm.createObject(ExeGroup.class);
+					exeGroup.setGroup(groups[i]);
+					e.getGroups().add(exeGroup);
+				}
+			}
+
+			if (!e.getName().equals(data.getName())) {
+				e.setName(data.getName());
+			}
+			if (!e.getDescription().equals(data.getDescription())) {
+				e.setDescription(data.getDescription());
+			}
+			realm.commitTransaction();
+			return Single.just(e).map(ExerciseModel::new);
 		} finally {
 			realm.close();
 		}
 	}
 
 	@Override
-	public void deleteExercise(long id) {
+	public Single<Boolean> deleteExercise(long id) {
 		Realm realm = Realm.getDefaultInstance();
 		try {
 			final RealmResults<Exercise> results = realm.where(Exercise.class).equalTo(Exercise.ID, id).findAll();
-			realm.executeTransaction(new Realm.Transaction() {
-				@Override
-				public void execute(Realm realm) {
-					results.deleteAllFromRealm();
-				}
-			});
+			realm.beginTransaction();
+			final Boolean result = results.deleteAllFromRealm();
+			realm.commitTransaction();
+			return Single.just(result);
 		} finally {
 			realm.close();
 		}
 	}
 
 	@Override
-	public boolean reverseFavorite(long id) {
+	public Single<Boolean> reverseFavorite(long id) {
 		Realm realm = Realm.getDefaultInstance();
 		try {
 			final RealmResults<Exercise> results = realm.where(Exercise.class).equalTo(Exercise.ID, id).findAll();
 			final Exercise e = results.get(0);
 			final boolean fav = !e.isFavorite();
-			realm.executeTransaction(new Realm.Transaction() {
-				@Override
-				public void execute(Realm realm) {
-					e.setFavorite(fav);
-				}
-			});
-			return fav;
+			realm.executeTransaction(realm1 -> e.setFavorite(fav));
+			return Single.just(fav);
 		} finally {
 			realm.close();
 		}
-	}
-
-	private ExerciseModel exerciseToExerciseModel(Exercise e) {
-		return new ExerciseModel(e.getId(), e.getGroupsArray(),
-				e.getName(), e.getDescription(), e.isFavorite());
 	}
 
 	/**

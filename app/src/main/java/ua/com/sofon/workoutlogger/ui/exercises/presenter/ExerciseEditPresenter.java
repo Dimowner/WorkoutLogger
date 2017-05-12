@@ -18,6 +18,9 @@ package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
 import java.util.Arrays;
+
+import timber.log.Timber;
+import ua.com.sofon.workoutlogger.IBaseView;
 import ua.com.sofon.workoutlogger.business.exercises.IExerciseEditInteractor;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 import ua.com.sofon.workoutlogger.ui.exercises.views.IExerciseEditView;
@@ -36,9 +39,8 @@ public class ExerciseEditPresenter implements IExerciseEditPresenter {
 	}
 
 	@Override
-	public void bindView(@NonNull IExerciseEditView iExerciseEditView) {
-		this.iExerciseEditView = iExerciseEditView;
-
+	public void bindView(@NonNull IBaseView view) {
+		this.iExerciseEditView = (IExerciseEditView) view;
 	}
 
 	@Override
@@ -59,8 +61,16 @@ public class ExerciseEditPresenter implements IExerciseEditPresenter {
 	@Override
 	public void addExercise(ExerciseDataModel data) {
 //		ToDO: do validation
-		iExerciseEditInteractor.addExercise(data);
-		iExerciseEditView.exerciseAdded();
+		iExerciseEditInteractor.addExercise(data).subscribe(this::handleSuccess, this::handleError);
+	}
+
+	private void handleSuccess(ExerciseDataModel dataModel) {
+		Timber.v("Opa result = " + dataModel.toString());
+		iExerciseEditView.exerciseAdded(dataModel);
+	}
+
+	private void handleError(Throwable throwable) {
+		Timber.e(throwable);
 	}
 
 	@Override
@@ -72,14 +82,27 @@ public class ExerciseEditPresenter implements IExerciseEditPresenter {
 
 	@Override
 	public void loadExerciseData(long id) {
-		ExerciseDataModel data = iExerciseEditInteractor.loadData(id);
-		if (data != null) {
-			if (data.getImagePath() != null && !data.getImagePath().isEmpty()) {
-				iExerciseEditView.setImage(data.getImagePath());
-			}
-			iExerciseEditView.setName(data.getName());
-			iExerciseEditView.setDescription(data.getDescription());
-			iExerciseEditView.selectGroup(Arrays.toString(data.getGroups()));
+		iExerciseEditView.showProgress();
+		iExerciseEditInteractor.loadData(id).subscribe(
+				this::handleSuccessLoadExerciseData,
+				this::handleErrorLoadExerciseData
+		);
+	}
+
+	private void handleSuccessLoadExerciseData(@NonNull ExerciseDataModel data) {
+		if (data.getImagePath() != null && !data.getImagePath().isEmpty()) {
+			iExerciseEditView.setImage(data.getImagePath());
 		}
+		iExerciseEditView.setName(data.getName());
+		iExerciseEditView.setDescription(data.getDescription());
+		iExerciseEditView.selectGroup(Arrays.toString(data.getGroups()));
+		iExerciseEditView.hideProgress();
+	}
+
+	private void handleErrorLoadExerciseData(Throwable throwable) {
+//		TODO: handle error
+		Timber.e(throwable);
+//		iExerciseEditView.hideProgress();
+//		iExerciseEditView.showError();
 	}
 }

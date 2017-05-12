@@ -16,21 +16,19 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
-import android.support.annotation.NonNull;
-
-import ua.com.sofon.workoutlogger.ui.exercises.views.IExercisesView;
+import rx.Single;
+import ua.com.sofon.workoutlogger.IBasePresenter;
 
 /**
  * Created on 08.03.2017.
  * @author Dimowner
  */
-public interface IExercisesPresenter {
-
-	void bindView(@NonNull IExercisesView iAllExercisesView);
-	void unbindView();
+public interface IExercisesPresenter extends IBasePresenter {
 
 	void loadAllExercises();
 	void loadFavoritesExercises();
 
-	boolean reverseFavorite(int id);
+	void updateListItem(long id);
+
+	Single<Boolean> reverseFavorite(int id);
 }

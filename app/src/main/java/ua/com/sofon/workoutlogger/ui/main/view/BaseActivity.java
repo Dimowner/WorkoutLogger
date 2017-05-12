@@ -31,6 +31,7 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
 import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.WLApplication;
 import ua.com.sofon.workoutlogger.dagger.main.MainModule;
@@ -43,7 +44,7 @@ import ua.com.sofon.workoutlogger.ui.main.presenter.IMainPresenter;
  * Base activity with base functionality and drawer layout.
  * @author Dimowner
  */
-public class BaseActivity extends AppCompatActivity implements IMainView{
+public class BaseActivity extends AppCompatActivity implements IMainView {
 
 	// symbols for navdrawer items (indices must correspond to array below). This is
 	// not a list of items that are necessarily *present* in the Nav Drawer; rather,
@@ -237,5 +238,15 @@ public class BaseActivity extends AppCompatActivity implements IMainView{
 	public void startExercisesActivity() {
 		startActivity(new Intent(this, ExercisesActivity.class));
 		finish();
+	}
+
+	@Override
+	public void showProgress() {
+		Timber.v("showProgress");
+	}
+
+	@Override
+	public void hideProgress() {
+		Timber.v("hideProgress");
 	}
 }

@@ -16,6 +16,8 @@
 
 package ua.com.sofon.workoutlogger.business.exercises;
 
+import rx.Single;
+import rx.functions.Func1;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.IExercisesRepository;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
@@ -33,30 +35,27 @@ public class ExerciseEditInteractor implements IExerciseEditInteractor {
 	}
 
 	@Override
-	public ExerciseDataModel loadData(long id) {
-		ExerciseModel e = iExercisesRepository.loadExercise(id);
-		return new ExerciseDataModel(e.getId(), e.getGroups(), e.getName(), e.getDescription(), null, null, e.isFavorite());
+	public Single<ExerciseDataModel> loadData(long id) {
+		return iExercisesRepository.loadExercise(id)
+				.map(ExerciseDataModel::new);
 	}
 
-//	@Override
-//	public long saveData(ExerciseDataModel data) {
-////		TODO: save exercise
-//		return 0;
-//	}
-
-	@Override
-	public boolean validateData(ExerciseDataModel data) {
+	private boolean validateData(ExerciseDataModel data) {
 //		TODO: do some validation stuff;
 		return true;
 	}
 
 	@Override
-	public long addExercise(ExerciseDataModel data) {
-		return iExercisesRepository.addExercise(data.toExerciseModel());
+	public Single<ExerciseDataModel> addExercise(ExerciseDataModel data) {
+		//TODO: do data validation
+		return iExercisesRepository.addExercise(data.toExerciseModel())
+				.map(ExerciseDataModel::new);
 	}
 
 	@Override
-	public void updateExercise(ExerciseDataModel data) {
-		iExercisesRepository.updateExercise(data.toExerciseModel());
+	public Single<ExerciseDataModel> updateExercise(ExerciseDataModel data) {
+		//TODO: do data validation
+		return iExercisesRepository.updateExercise(data.toExerciseModel())
+				.map(ExerciseDataModel::new);
 	}
 }

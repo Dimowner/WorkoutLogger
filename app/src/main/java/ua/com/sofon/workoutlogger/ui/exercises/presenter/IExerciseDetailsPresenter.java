@@ -16,19 +16,14 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
-import android.support.annotation.NonNull;
-
+import ua.com.sofon.workoutlogger.IBasePresenter;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
-import ua.com.sofon.workoutlogger.ui.exercises.views.IExerciseDetailsView;
 
 /**
  * Created on 04.04.2017.
  * @author Dimowner
  */
-public interface IExerciseDetailsPresenter {
-
-	void bindView(@NonNull IExerciseDetailsView iExerciseEditView);
-	void unbindView();
+public interface IExerciseDetailsPresenter extends IBasePresenter {
 
 	void clickShowYoutubeVideo();
 	void reverseFavorite(long id);

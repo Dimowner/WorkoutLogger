@@ -16,16 +16,13 @@
 
 package ua.com.sofon.workoutlogger.ui.main.presenter;
 
-import ua.com.sofon.workoutlogger.ui.main.view.IMainView;
+import ua.com.sofon.workoutlogger.IBasePresenter;
 
 /**
  * Created on 08.03.2017.
  * @author Dimowner
  */
-public interface IMainPresenter {
-
-	void bindView(IMainView iMainView);
-	void unbindView();
+public interface IMainPresenter extends IBasePresenter {
 
 	void clickToHomeMenuItem();
 	void clickToExercisesMenuItem();

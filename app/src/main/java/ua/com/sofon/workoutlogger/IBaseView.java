@@ -14,32 +14,13 @@
  * limitations under the License.
  */
 
-package ua.com.sofon.workoutlogger.ui.exercises.views;
-
-import ua.com.sofon.workoutlogger.IBaseView;
+package ua.com.sofon.workoutlogger;
 
 /**
- * Created on 04.04.2017.
+ * Created on 12.05.2017.
  * @author Dimowner
  */
-public interface IExerciseDetailsView extends IBaseView {
-
-//	void showProgress();
-//	void hideProgress();
-	void showError();
-
-	void setImage(String path);
-	void setName(String name);
-	void selectGroup(String group);
-	void setDescription(String description);
-	void setFavorite(boolean fav);
-
-	void exerciseDeleted();
-
-	/**
-	 * Exercise added or removed from favorites.
-	 * @param fav True means added to favorites, false means removed from favorites
-	 */
-	void favoritesUpdated(boolean fav);
-
+public interface IBaseView {
+	void showProgress();
+	void hideProgress();
 }

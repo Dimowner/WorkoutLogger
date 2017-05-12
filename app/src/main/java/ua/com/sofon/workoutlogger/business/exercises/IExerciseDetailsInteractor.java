@@ -16,6 +16,7 @@
 
 package ua.com.sofon.workoutlogger.business.exercises;
 
+import rx.Single;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 
 /**
@@ -24,10 +25,10 @@ import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
  */
 public interface IExerciseDetailsInteractor {
 
-	ExerciseDataModel loadData(long id);
+	Single<ExerciseDataModel> loadData(long id);
 
-	boolean reverseFavorite(long id);
+	Single<Boolean> reverseFavorite(long id);
 
-	void deleteExercise(long id);
+	Single<Boolean> deleteExercise(long id);
 
 }
