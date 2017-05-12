@@ -17,7 +17,9 @@
 package ua.com.sofon.workoutlogger.ui.exercises.views;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -43,10 +45,16 @@ public class ExercisesActivity extends BaseActivity {
 
 	public static final String EXTRAS_KEY_EXERCISE_ID = "exercise_id";
 
+	/** Preferences key in which contains active tab number
+	 * to restore that position on next activity run. */
+	public static final String PREF_KEY_ACTIVE_TAB_NUMBER = "active_tab_number";
+
 	public static final int REQ_CODE_ADD_EXE = 1;
 
 	private ExercisesFragment exercisesFragment;
 	private ExercisesFragment fevExercisesFragment;
+
+	private ViewPager viewPager;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +82,7 @@ public class ExercisesActivity extends BaseActivity {
 	}
 
 	private void initViewpager() {
-		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		if (viewPager != null) {
 			CustomTabsAdapter adapter = new CustomTabsAdapter(getSupportFragmentManager());
 			adapter.addFragment(exercisesFragment, getString(R.string.exe_activity_all_exercises));
@@ -84,6 +92,7 @@ public class ExercisesActivity extends BaseActivity {
 			if (tabLayout != null) {
 				tabLayout.setupWithViewPager(viewPager);
 			}
+			viewPager.setCurrentItem(loadActiveTabNumberFromPrefs());
 		}
 	}
 
@@ -118,6 +127,12 @@ public class ExercisesActivity extends BaseActivity {
 	}
 
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		saveActiveTabNumberToPrefs(viewPager.getCurrentItem());
+	}
+
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
@@ -129,6 +144,19 @@ public class ExercisesActivity extends BaseActivity {
 			}
 		}
 	}
+
+	private void saveActiveTabNumberToPrefs(int num) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putInt(PREF_KEY_ACTIVE_TAB_NUMBER, num);
+		editor.apply();
+	}
+
+	private int loadActiveTabNumberFromPrefs() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		return prefs.getInt(PREF_KEY_ACTIVE_TAB_NUMBER, 0);
+	}
+
 
 	/**
 	 * Pager adapter implementation with fragments
