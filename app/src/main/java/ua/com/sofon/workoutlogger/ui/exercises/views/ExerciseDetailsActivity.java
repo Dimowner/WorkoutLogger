@@ -111,27 +111,6 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 
 	@OnClick(R.id.fab)
 	void addExeIntoDatabase(View view) {
-//		realm.executeTransactionAsync(new Realm.Transaction() {
-//			@Override
-//			public void execute(Realm realm) {
-//				Exercise exercise = realm.createObject(Exercise.class);
-//				exercise.setId(1);
-//				exercise.setName("Back push");
-//				exercise.setDescription("121213 Back push, Back push, Back push");
-//				exercise.setGroup(3);
-//				exercise.setFavorite(true);
-//			}
-//		}, new Realm.Transaction.OnSuccess() {
-//			@Override
-//			public void onSuccess() {
-//				Log.v("Details", "onSuccess!!");
-//			}
-//		}, new Realm.Transaction.OnError() {
-//			@Override
-//			public void onError(Throwable error) {
-//				Log.e("Details", "onError!!", error);
-//			}
-//		});
 	}
 
 	//TODO: move to animation Utils

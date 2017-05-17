@@ -40,22 +40,35 @@ public class ExerciseEditInteractor implements IExerciseEditInteractor {
 				.map(ExerciseDataModel::new);
 	}
 
-	private boolean validateData(ExerciseDataModel data) {
-//		TODO: do some validation stuff;
-		return true;
-	}
-
-	@Override
+`	@Override
 	public Single<ExerciseDataModel> addExercise(ExerciseDataModel data) {
-		//TODO: do data validation
-		return iExercisesRepository.addExercise(data.toExerciseModel())
-				.map(ExerciseDataModel::new);
+		//TODO: Fix data validation
+		if (validateData(data)) {
+			return iExercisesRepository.addExercise(data.toExerciseModel())
+					.map(ExerciseDataModel::new);
+		} else {
+			return Single.error(new Exception("Validation error"));
+		}
 	}
 
 	@Override
 	public Single<ExerciseDataModel> updateExercise(ExerciseDataModel data) {
-		//TODO: do data validation
-		return iExercisesRepository.updateExercise(data.toExerciseModel())
-				.map(ExerciseDataModel::new);
+		//TODO: Fix data validation
+		if (validateData(data)) {
+			return iExercisesRepository.updateExercise(data.toExerciseModel())
+					.map(ExerciseDataModel::new);
+		} else {
+			return Single.error(new Exception("Validation error"));
+		}
+	}
+
+	private boolean validateData(ExerciseDataModel data) {
+		if ((data.getName().trim().length() > 0)
+				&& (data.getDescription().trim().length() > 0)
+				&& (data.getGroups().length > 0)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

@@ -44,7 +44,7 @@ public class ExercisesInteractor implements IExercisesInteractor {
 				.map(data -> {
 						List<ListItem> listData = new ArrayList<>();
 						for (ExerciseModel e : data) {
-							ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite());
+							ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getImagePath(), e.isFavorite());
 							listData.add(item);
 						}
 						return listData;
@@ -54,7 +54,7 @@ public class ExercisesInteractor implements IExercisesInteractor {
 	@Override
 	public Single<ListItem> getExercise(long id) {
 		return iExercisesRepository.loadExercise(id)
-				.map(e -> new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite()));
+				.map(e -> new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getImagePath(), e.isFavorite()));
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ExercisesInteractor implements IExercisesInteractor {
 						List<ListItem> listData = new ArrayList<>();
 
 						for (ExerciseModel e : data) {
-							ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getDescription(), e.isFavorite());
+							ListItem item = new ListItem(e.getId(), e.getGroups()[0], e.getName(), e.getImagePath(), e.isFavorite());
 							listData.add(item);
 						}
 						return listData;

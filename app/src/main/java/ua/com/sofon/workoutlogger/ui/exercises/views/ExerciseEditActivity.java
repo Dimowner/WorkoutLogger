@@ -16,9 +16,16 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.views;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -30,6 +37,8 @@ import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import javax.inject.Inject;
@@ -44,12 +53,22 @@ import ua.com.sofon.workoutlogger.components.MultiSelectTextView;
 import ua.com.sofon.workoutlogger.dagger.exercises.ExerciseEditModule;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 import ua.com.sofon.workoutlogger.ui.exercises.presenter.IExerciseEditPresenter;
+import ua.com.sofon.workoutlogger.util.FileUtil;
 
 /**
  * Created on 31.03.2017.
  * @author Dimowner
  */
 public class ExerciseEditActivity extends AppCompatActivity implements IExerciseEditView {
+
+	private static final int REQUEST_CODE_MAKE_PHOTO = 1;
+
+	private static final int REQUEST_WRITE_CAMERA_PERMISSION = 2;
+
+	private static final String FILE_PROVIDER_AUTHORITY = "ua.com.sofon.workoutlogger.fileprovider";
+
+	/** Temp image path */
+	String mCurrentPhotoPath;
 
 	@Inject
 	IExerciseEditPresenter iExerciseEditPresenter;
@@ -87,6 +106,109 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 		iExerciseEditPresenter.bindView(this);
 		if (id != ID_UNKNOWN) {
 			iExerciseEditPresenter.loadExerciseData(id);
+		}
+
+		ivImage.setOnClickListener(v -> makePhoto());
+	}
+
+	private void makePhoto() {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			runCameraActivityLollipopAndBeyond();
+		} else{
+			runCameraActivityPreLollipop();
+		}
+	}
+
+	private void runCameraActivityPreLollipop() {
+		try {
+			// do something for phones running an SDK before lollipop
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			Uri imageUri = Uri.fromFile(FileUtil.createTempImageFile(getApplicationContext()));
+			mCurrentPhotoPath = imageUri.getPath();
+			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+			startActivityForResult(intent, REQUEST_CODE_MAKE_PHOTO);
+		} catch (IOException e) {
+			Timber.e(e);
+		}
+	}
+
+	private void runCameraActivityLollipopAndBeyond() {
+		if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
+			dispatchTakePictureIntent();
+		} else {
+			requestWritePermission();
+		}
+	}
+
+	public boolean hasPermissions(String... permissions) {
+		for (String permission : permissions) {
+			if (ActivityCompat.checkSelfPermission(getApplicationContext(), permission)
+					!= PackageManager.PERMISSION_GRANTED) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void dispatchTakePictureIntent() {
+		Timber.v("dispatchTakePictureIntent");
+		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		// Ensure that there's a camera activity to handle the intent
+		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+			// Create the File where the photo should go
+			File photoFile = null;
+			try {
+				photoFile = FileUtil.createTempImageFile(getApplicationContext());
+			} catch (IOException ex) {
+				Timber.e(ex);
+			}
+			// Continue only if the File was successfully created
+			if (photoFile != null) {
+				mCurrentPhotoPath = photoFile.getPath();
+				Uri photoURI = FileProvider.getUriForFile(this,
+						FILE_PROVIDER_AUTHORITY,
+						photoFile);
+				takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+				startActivityForResult(takePictureIntent, REQUEST_CODE_MAKE_PHOTO);
+			}
+		}
+	}
+
+	/**
+	 * Ask permission write files into file system.
+	 */
+	private void requestWritePermission() {
+		ActivityCompat.requestPermissions(
+				ExerciseEditActivity.this,
+				new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+				REQUEST_WRITE_CAMERA_PERMISSION
+		);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+														@NonNull int[] grantResults) {
+		if (requestCode == REQUEST_WRITE_CAMERA_PERMISSION) {
+			if (grantResults.length > 0
+					&& grantResults[0] == PackageManager.PERMISSION_GRANTED
+					&& grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+				dispatchTakePictureIntent();
+			}
+		} else {
+			super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == RESULT_OK) {
+			switch (requestCode) {
+				case REQUEST_CODE_MAKE_PHOTO:
+					iExerciseEditPresenter.updateImage(mCurrentPhotoPath);
+					break;
+			}
 		}
 	}
 
@@ -126,7 +248,6 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 //				TODO: Start youtube app for choose exercise video;
 				break;
 			case R.id.action_accept:
-//				TODO: Accept changes
 				if (id == ID_UNKNOWN) {
 					iExerciseEditPresenter.addExercise(getExerciseData());
 				} else {
@@ -206,7 +327,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 	@Override
 	public void exerciseAdded(ExerciseDataModel model) {
 		Intent intent = new Intent();
-		intent.putExtra("result", model);
+		intent.putExtra(ExercisesActivity.EXTRAS_KEY_EXERCISE_MODEL, model);
 		setResult(RESULT_OK, intent);
 		finish();
 	}
@@ -217,7 +338,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 				txtMuscleGroups.getSelectedIds(),
 				txtName.getText().toString(),
 				txtDescription.getText().toString(),
-				null,
+				mCurrentPhotoPath,
 				null,
 				false);
 	}

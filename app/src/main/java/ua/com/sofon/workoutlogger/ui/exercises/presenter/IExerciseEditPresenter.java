@@ -25,8 +25,7 @@ import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
  */
 public interface IExerciseEditPresenter extends IBasePresenter {
 
-	void clickAddYoutubeVideo();
-	void clickAddImage();
+	void updateImage(String path);
 
 	void addExercise(ExerciseDataModel data);
 	void updateExercise(ExerciseDataModel data);

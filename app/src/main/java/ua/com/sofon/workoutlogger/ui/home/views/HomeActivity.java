@@ -16,9 +16,13 @@
 
 package ua.com.sofon.workoutlogger.ui.home.views;
 
+import android.app.SearchManager;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.view.View;
 import android.view.animation.AnimationUtils;
 
 import butterknife.BindView;
@@ -61,6 +65,18 @@ public class HomeActivity extends BaseActivity {
 				.setInterpolator(AnimationUtils.loadInterpolator(getApplicationContext(),
 						android.R.interpolator.accelerate_decelerate))
 				.start();
+	}
+
+	@OnClick(R.id.fab)
+	void onFabClick(View view) {
+//		Intent intent = new Intent(Intent.ACTION_SEARCH);
+////				, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+//		intent.setPackage("com.google.android.youtube");
+//		intent.putExtra(SearchManager.QUERY, "Становая тяга");
+////		intent.setType("video/*");
+////		intent.setAction(Intent.ACTION_GET_CONTENT);
+////		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		startActivityForResult(intent, 201);
 	}
 
 	@Override

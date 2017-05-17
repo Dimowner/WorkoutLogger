@@ -32,7 +32,6 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
-import timber.log.Timber;
 import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity;
@@ -44,6 +43,7 @@ import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity;
 public class ExercisesActivity extends BaseActivity {
 
 	public static final String EXTRAS_KEY_EXERCISE_ID = "exercise_id";
+	public static final String EXTRAS_KEY_EXERCISE_MODEL = "exercise_model";
 
 	/** Preferences key in which contains active tab number
 	 * to restore that position on next activity run. */
@@ -138,7 +138,7 @@ public class ExercisesActivity extends BaseActivity {
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
 				case REQ_CODE_ADD_EXE:
-					ExerciseDataModel dataModel = data.getParcelableExtra("result");
+					ExerciseDataModel dataModel = data.getParcelableExtra(EXTRAS_KEY_EXERCISE_MODEL);
 					exercisesFragment.addItemToList(dataModel);
 					break;
 			}

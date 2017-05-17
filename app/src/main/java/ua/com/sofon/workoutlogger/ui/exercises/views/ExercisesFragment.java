@@ -34,6 +34,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -270,7 +272,6 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 
 	@Override
 	public void showExercises(List<ListItem> list) {
-		Timber.v("Show all exercises" + list.size());
 		mAdapter.setData(list);
 	}
 
@@ -461,9 +462,13 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 						groupViewHolder.ivIcon.setImageResource(R.drawable.chevron_down);
 					}
 
-//						Glide.with(mContext)
-//								.load(R.drawable.fitness1).fitCenter().into(groupViewHolder.ivImage);
-
+					if (mShowingData.get(posGroup).getImagePath() != null) {
+						Glide.with(getContext())
+								.load(mShowingData.get(posGroup).getImagePath())
+								.thumbnail(0.5f)
+								.crossFade()
+								.into(groupViewHolder.ivImage);
+					}
 					break;
 				case TYPE_CHILD:
 					final ChildViewHolder childViewHolder = (ChildViewHolder) holder;
@@ -489,8 +494,13 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 					} else {
 						childViewHolder.ivIcon.setImageResource(R.drawable.star_outline);
 					}
-//						Glide.with(mContext)
-//								.load(R.drawable.fitness1).fitCenter().into(childViewHolder.ivImage);
+					if (mShowingData.get(posChild).getImagePath() != null) {
+						Glide.with(getContext())
+								.load(mShowingData.get(posChild).getImagePath())
+								.thumbnail(0.5f)
+								.crossFade()
+								.into(childViewHolder.ivImage);
+					}
 					break;
 			}
 		}

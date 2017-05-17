@@ -4,6 +4,7 @@
 	<string name="title_home">WORKOUT LOGGER</string>
 	<string name="title_exercise">Exercise</string>
 	<string name="title_exercises">EXERCISES</string>
+	<string name="title_edit_exercise">EDIT EXERCISE</string>
 	<string name="title_workouts">Workouts</string>
 	<string name="title_workout">Workout</string>
 	<string name="title_weight">Weight</string>

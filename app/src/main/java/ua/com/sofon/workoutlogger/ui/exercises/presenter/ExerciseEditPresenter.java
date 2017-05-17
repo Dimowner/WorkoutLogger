@@ -17,7 +17,6 @@
 package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
-import java.util.Arrays;
 
 import timber.log.Timber;
 import ua.com.sofon.workoutlogger.IBaseView;
@@ -49,35 +48,29 @@ public class ExerciseEditPresenter implements IExerciseEditPresenter {
 	}
 
 	@Override
-	public void clickAddYoutubeVideo() {
-
-	}
-
-	@Override
-	public void clickAddImage() {
-
+	public void updateImage(String path) {
+		if (path != null && !path.isEmpty()) {
+			if (path.contains("file:")) {
+				path = path.substring(5, path.length());
+			}
+			iExerciseEditView.setImage(path);
+		}
 	}
 
 	@Override
 	public void addExercise(ExerciseDataModel data) {
 //		ToDO: do validation
-		iExerciseEditInteractor.addExercise(data).subscribe(this::handleSuccess, this::handleError);
-	}
-
-	private void handleSuccess(ExerciseDataModel dataModel) {
-		Timber.v("Opa result = " + dataModel.toString());
-		iExerciseEditView.exerciseAdded(dataModel);
-	}
-
-	private void handleError(Throwable throwable) {
-		Timber.e(throwable);
+		iExerciseEditInteractor.addExercise(data)
+				.subscribe(e -> iExerciseEditView.exerciseAdded(e), this::handleError);
 	}
 
 	@Override
 	public void updateExercise(ExerciseDataModel data) {
 //		ToDO: do validation
-		iExerciseEditInteractor.updateExercise(data);
-		iExerciseEditView.exerciseUpdated();
+		iExerciseEditInteractor.updateExercise(data)
+				.subscribe(e -> iExerciseEditView.exerciseUpdated(),
+						this::handleError);
+
 	}
 
 	@Override
@@ -99,8 +92,13 @@ public class ExerciseEditPresenter implements IExerciseEditPresenter {
 		iExerciseEditView.hideProgress();
 	}
 
+	private void handleError(Throwable throwable) {
+//		TODO: handle error correctly
+		Timber.e(throwable);
+	}
+
 	private void handleErrorLoadExerciseData(Throwable throwable) {
-//		TODO: handle error
+//		TODO: handle error correctly
 		Timber.e(throwable);
 //		iExerciseEditView.hideProgress();
 //		iExerciseEditView.showError();

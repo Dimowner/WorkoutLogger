@@ -26,6 +26,7 @@ import timber.log.Timber;
 import ua.com.sofon.workoutlogger.data.realm.ExeGroup;
 import ua.com.sofon.workoutlogger.data.realm.Exercise;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
+import ua.com.sofon.workoutlogger.util.FileUtil;
 
 /**
  * Created on 08.03.2017.
@@ -96,6 +97,11 @@ public class ExercisesRepository implements IExercisesRepository {
 
 			exercise.setName(data.getName());
 			exercise.setDescription(data.getDescription());
+
+			if (data.getImagePath() != null) {
+				exercise.setImagePath(FileUtil.moveImageIntoAppDir(data.getImagePath(), FileUtil.PICTURES_DIR));
+			}
+
 			exercise.setFavorite(false);
 
 			Exercise e = realm.copyToRealmOrUpdate(exercise);
@@ -152,6 +158,9 @@ public class ExercisesRepository implements IExercisesRepository {
 			}
 			if (!e.getDescription().equals(data.getDescription())) {
 				e.setDescription(data.getDescription());
+			}
+			if (data.getImagePath() != null) {
+				e.setImagePath(FileUtil.moveImageIntoAppDir(data.getImagePath(), FileUtil.PICTURES_DIR));
 			}
 			realm.commitTransaction();
 			return Single.just(e).map(ExerciseModel::new);
