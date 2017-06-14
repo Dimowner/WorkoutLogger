@@ -40,7 +40,7 @@ public class ExerciseEditInteractor implements IExerciseEditInteractor {
 				.map(ExerciseDataModel::new);
 	}
 
-`	@Override
+	@Override
 	public Single<ExerciseDataModel> addExercise(ExerciseDataModel data) {
 		//TODO: Fix data validation
 		if (validateData(data)) {

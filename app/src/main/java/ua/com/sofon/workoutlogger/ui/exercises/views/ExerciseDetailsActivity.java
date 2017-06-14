@@ -20,12 +20,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,6 +45,7 @@ import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.WLApplication;
 import ua.com.sofon.workoutlogger.dagger.exercises.ExerciseDetailsModule;
 import ua.com.sofon.workoutlogger.ui.exercises.presenter.IExerciseDetailsPresenter;
+import ua.com.sofon.workoutlogger.util.AnimationUtil;
 import ua.com.sofon.workoutlogger.util.UIUtil;
 
 /**
@@ -99,7 +100,7 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 		if (getSupportActionBar() != null) {
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		}
-		showFab();
+		AnimationUtil.fabRevealAnimation(fab);
 
 		iExerciseDetailsPresenter.bindView(this);
 		id = getIntent().getLongExtra(ExercisesActivity.EXTRAS_KEY_EXERCISE_ID, ID_UNKNOWN);
@@ -111,23 +112,6 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 
 	@OnClick(R.id.fab)
 	void addExeIntoDatabase(View view) {
-	}
-
-	//TODO: move to animation Utils
-	void showFab() {
-		fab.setAlpha(0f);
-		fab.setScaleX(0f);
-		fab.setScaleY(0f);
-		fab.setTranslationY(fab.getHeight() / 2);
-		fab.animate()
-				.alpha(1f)
-				.scaleX(1f)
-				.scaleY(1f)
-				.translationY(0f)
-				.setDuration(350L)
-				.setInterpolator(AnimationUtils.loadInterpolator(getApplicationContext(),
-						android.R.interpolator.accelerate_decelerate))
-				.start();
 	}
 
 	@Override
@@ -221,7 +205,7 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 	@Override
 	public void showError() {
 		Timber.v("showError");
-		toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+		toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
 		fab.setVisibility(View.GONE);
 		ivImage.setVisibility(View.GONE);
 		txtName.setVisibility(View.GONE);

@@ -251,6 +251,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 				if (id == ID_UNKNOWN) {
 					iExerciseEditPresenter.addExercise(getExerciseData());
 				} else {
+//					TODO: when update image must delete previous image!
 					iExerciseEditPresenter.updateExercise(getExerciseData());
 				}
 				break;
@@ -298,7 +299,11 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 	@Override
 	public void setImage(String path) {
 		Timber.v("Path = " + path);
-		Glide.with(getApplicationContext()).load(path).fitCenter().into(ivImage);
+		ivImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+		Glide.with(ExerciseEditActivity.this)
+				.load(path)
+				.error(R.drawable.alert_circle)
+				.into(ivImage);
 	}
 
 	@Override

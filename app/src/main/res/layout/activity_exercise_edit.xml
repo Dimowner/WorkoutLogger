@@ -47,7 +47,7 @@
 					android:id="@+id/exe_edit_image"
 					android:layout_width="match_parent"
 					android:layout_height="230dp"
-					android:scaleType="centerCrop"
+					android:scaleType="center"
 					android:background="@color/colorPrimaryLight"
 					app:srcCompat="@drawable/camera"/>
 

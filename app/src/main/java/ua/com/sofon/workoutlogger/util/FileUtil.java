@@ -259,25 +259,42 @@ public class FileUtil {
 	 * @return Resulted image path. If failed than false will be returned.
 	 */
 	public static String moveImageIntoAppDir(String path, String nestedHierarchy) {
-		Timber.v("moveImageIntoAppDir item = " + path);
+		Timber.v("moveImageIntoAppDir item = " + path + ", nestedHier = " + nestedHierarchy);
 		File item = new File(path);
 
 		String timeStamp = new SimpleDateFormat(
 				"yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
 		String name = "IMG_"+ timeStamp + ".jpeg";
-		if (item.renameTo(new File(FileUtil.getAppDir(), name))) {
-			if (nestedHierarchy == null) {
-				Timber.d("Successfully inserted! New path: " + FileUtil.getAppDir() + File.separator + name);
+
+		if (nestedHierarchy == null) {
+			if (item.renameTo(new File(FileUtil.getAppDir(), name))) {
+				Timber.d("Successfully inserted into app root dir! New path: "
+						+ FileUtil.getAppDir() + File.separator + name);
 				return FileUtil.getAppDir() + File.separator + name;
-			} else {
-				Timber.d("Successfully inserted! New path: " + FileUtil.getAppDir()
-						+ File.separator + nestedHierarchy + File.separator + name);
-				return FileUtil.getAppDir() + File.separator + nestedHierarchy + File.separator + name;
 			}
 		} else {
-			Timber.d("Failed to insert");
-			return null;
+			File dir = new File(FileUtil.getAppDir().getPath() + File.separator + nestedHierarchy);
+			Timber.v("File = " + dir.toString());
+			if (!dir.exists()) {
+				if (dir.mkdirs()) {
+					if (item.renameTo(new File(dir, name))) {
+						Timber.d("Successfully inserted! New path: " + FileUtil.getAppDir()
+								+ File.separator + nestedHierarchy + File.separator + name);
+						return FileUtil.getAppDir() + File.separator + nestedHierarchy + File.separator + name;
+					}
+				} else {
+					Timber.e("Error on directory creation!");
+				}
+			} else {
+				if (item.renameTo(new File(dir, name))) {
+					Timber.d("Successfully inserted! New path: " + FileUtil.getAppDir()
+							+ File.separator + nestedHierarchy + File.separator + name);
+					return FileUtil.getAppDir() + File.separator + nestedHierarchy + File.separator + name;
+				}
+			}
 		}
+		Timber.e("Failed to insert");
+		return null;
 	}
 
 	public static void findAllFilesWithExtension(File dir, String extension, List<File> listFiles) {

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 <item>
-	<!--<color android:color="@color/background_material_light"/>-->
-	<color android:color="@color/colorPrimary"/>
+	<shape android:shape="rectangle" >
+		<gradient android:type="radial"
+					 android:gradientRadius="900"
+					 android:startColor="@color/load_screen_gradient_light"
+					 android:endColor="@color/load_screen_gradient_dark" />
+	</shape>
 </item>
 <item>
 	<bitmap

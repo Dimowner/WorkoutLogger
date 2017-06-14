@@ -26,8 +26,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.View;
 
 import javax.inject.Inject;
 
@@ -36,7 +34,6 @@ import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.WLApplication;
 import ua.com.sofon.workoutlogger.dagger.main.MainModule;
 import ua.com.sofon.workoutlogger.ui.exercises.views.ExercisesActivity;
-//import ua.com.sofon.workoutlogger.ui.home.views.HomeActivity;
 import ua.com.sofon.workoutlogger.ui.home.views.HomeActivity;
 import ua.com.sofon.workoutlogger.ui.main.presenter.IMainPresenter;
 
@@ -123,16 +120,13 @@ public class BaseActivity extends AppCompatActivity implements IMainView {
 		mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 		if (mNavigationView != null) {
 			mNavigationView.setNavigationItemSelectedListener(
-					new NavigationView.OnNavigationItemSelectedListener() {
-						@Override
-						public boolean onNavigationItemSelected(MenuItem menuItem) {
-							menuItem.setChecked(true);
-							mDrawerLayout.closeDrawers();
-							if (getSelfNavDrawerItem() != menuItem.getItemId()) {
-								goToNavDrawerItem(menuItem.getItemId());
-							}
-							return true;
+					menuItem -> {
+						menuItem.setChecked(true);
+						mDrawerLayout.closeDrawers();
+						if (getSelfNavDrawerItem() != menuItem.getItemId()) {
+							goToNavDrawerItem(menuItem.getItemId());
 						}
+						return true;
 					});
 			if (selfItem > NAVDRAWER_ITEM_INVALID) {
 				mNavigationView.getMenu().findItem(selfItem).setChecked(true);
@@ -140,12 +134,8 @@ public class BaseActivity extends AppCompatActivity implements IMainView {
 		}
 
 		if (mActionBarToolbar != null) {
-			mActionBarToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					mDrawerLayout.openDrawer(Gravity.LEFT);
-				}
-			});
+			mActionBarToolbar.setNavigationOnClickListener(
+					view -> mDrawerLayout.openDrawer(Gravity.START));
 
 			mDrawerToggle = new ActionBarDrawerToggle(
 					this,                  /* host Activity */
@@ -156,17 +146,17 @@ public class BaseActivity extends AppCompatActivity implements IMainView {
 			);
 
 			mDrawerToggle.syncState();
-			mDrawerLayout.setDrawerListener(mDrawerToggle);
+			mDrawerLayout.addDrawerListener(mDrawerToggle);
 		}
 	}
 
 	protected boolean isNavDrawerOpen() {
-		return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(Gravity.LEFT);
+		return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(Gravity.START);
 	}
 
 	protected void closeNavDrawer() {
 		if (mDrawerLayout != null) {
-			mDrawerLayout.closeDrawer(Gravity.LEFT);
+			mDrawerLayout.closeDrawer(Gravity.START);
 		}
 	}
 

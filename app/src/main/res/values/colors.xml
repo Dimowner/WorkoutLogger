@@ -26,4 +26,7 @@
 	<color name="md_grey_300">#e0e0e0</color>
 	<color name="md_grey_400">#bdbdbd</color>
 
+	<color name="load_screen_gradient_dark">#2E3C43</color>
+	<color name="load_screen_gradient_light">#445963</color>
+
 </resources>

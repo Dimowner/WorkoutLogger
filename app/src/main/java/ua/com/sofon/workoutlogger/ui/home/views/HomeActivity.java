@@ -16,20 +16,17 @@
 
 package ua.com.sofon.workoutlogger.ui.home.views;
 
-import android.app.SearchManager;
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.ui.main.view.BaseActivity;
+import ua.com.sofon.workoutlogger.util.AnimationUtil;
 
 /**
  * Created on 29.03.2017.
@@ -47,24 +44,7 @@ public class HomeActivity extends BaseActivity {
 		setContentView(R.layout.activity_home);
 		ButterKnife.bind(this);
 
-		showFab();
-	}
-
-	//TODO: move to animation Utils
-	void showFab() {
-		fab.setAlpha(0f);
-		fab.setScaleX(0f);
-		fab.setScaleY(0f);
-		fab.setTranslationY(fab.getHeight() / 2);
-		fab.animate()
-				.alpha(1f)
-				.scaleX(1f)
-				.scaleY(1f)
-				.translationY(0f)
-				.setDuration(350L)
-				.setInterpolator(AnimationUtils.loadInterpolator(getApplicationContext(),
-						android.R.interpolator.accelerate_decelerate))
-				.start();
+		AnimationUtil.fabRevealAnimation(fab);
 	}
 
 	@OnClick(R.id.fab)
