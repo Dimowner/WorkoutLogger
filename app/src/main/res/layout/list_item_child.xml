@@ -24,7 +24,8 @@
 			android:id="@+id/exe_group_image"
 			android:layout_width="@dimen/exercises_group_image_width"
 			android:layout_height="@dimen/exercises_group_height"
-			android:scaleType="fitXY"
+			android:scaleType="centerCrop"
+			android:background="@color/colorPrimaryLight"
 			android:src="@drawable/default_cover"/>
 	<TextView
 			android:id="@+id/exe_group_name"

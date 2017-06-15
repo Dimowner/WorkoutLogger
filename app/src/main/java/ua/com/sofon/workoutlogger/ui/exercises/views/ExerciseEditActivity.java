@@ -36,6 +36,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,6 +88,24 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 	private long id = ID_UNKNOWN;
 
 	private boolean loadingError = false;
+
+	/** Glide exception listener */
+	private RequestListener<String, GlideDrawable> requestListener = new RequestListener<String, GlideDrawable>() {
+		@Override
+		public boolean onException(Exception e, String model,
+											Target<GlideDrawable> target, boolean isFirstResource) {
+			//When error rise alert icon will be actual size not scaled in imageView
+			ivImage.setScaleType(ImageView.ScaleType.CENTER);
+			return false;
+		}
+
+		@Override
+		public boolean onResourceReady(GlideDrawable resource, String model,
+												 Target<GlideDrawable> target, boolean
+												 isFromMemoryCache, boolean isFirstResource) {
+			return false;
+		}
+	};
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -251,7 +272,6 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 				if (id == ID_UNKNOWN) {
 					iExerciseEditPresenter.addExercise(getExerciseData());
 				} else {
-//					TODO: when update image must delete previous image!
 					iExerciseEditPresenter.updateExercise(getExerciseData());
 				}
 				break;
@@ -303,6 +323,7 @@ public class ExerciseEditActivity extends AppCompatActivity implements IExercise
 		Glide.with(ExerciseEditActivity.this)
 				.load(path)
 				.error(R.drawable.alert_circle)
+				.listener(requestListener)
 				.into(ivImage);
 	}
 

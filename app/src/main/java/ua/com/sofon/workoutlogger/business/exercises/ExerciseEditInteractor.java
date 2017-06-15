@@ -17,8 +17,6 @@
 package ua.com.sofon.workoutlogger.business.exercises;
 
 import rx.Single;
-import rx.functions.Func1;
-import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.IExercisesRepository;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 

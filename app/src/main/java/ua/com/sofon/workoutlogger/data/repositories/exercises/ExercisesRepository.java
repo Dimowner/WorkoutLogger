@@ -16,6 +16,7 @@
 
 package ua.com.sofon.workoutlogger.data.repositories.exercises;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import io.realm.Realm;
@@ -159,9 +160,23 @@ public class ExercisesRepository implements IExercisesRepository {
 			if (!e.getDescription().equals(data.getDescription())) {
 				e.setDescription(data.getDescription());
 			}
-			if (data.getImagePath() != null) {
-				e.setImagePath(FileUtil.moveImageIntoAppDir(data.getImagePath(), FileUtil.PICTURES_DIR));
+			//Update image path in exercise.
+			if ((data.getImagePath() != null && e.getImagePath() == null)
+					|| (data.getImagePath() == null && e.getImagePath() != null)
+					|| (data.getImagePath() != null && e.getImagePath() != null && !data.getImagePath().equals(e.getImagePath()))) {
+
+				if (e.getImagePath() != null) {
+					//Delete not needed image after replace it by new one.
+					FileUtil.deleteFile(new File(e.getImagePath()));
+				}
+				if (data.getImagePath() != null) {
+					//Set new image.
+					e.setImagePath(FileUtil.moveImageIntoAppDir(data.getImagePath(), FileUtil.PICTURES_DIR));
+				} else {
+					e.setImagePath(null);
+				}
 			}
+
 			realm.commitTransaction();
 			return Single.just(e).map(ExerciseModel::new);
 		} finally {

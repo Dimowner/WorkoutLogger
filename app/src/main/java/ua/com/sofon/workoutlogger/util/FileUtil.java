@@ -414,10 +414,22 @@ public class FileUtil {
 	}
 
 	/**
+	 * Remove file or directory with all content
+	 * @param file File or directory needed to delete.
+	 */
+	public static boolean deleteFile(File file) {
+		if (deleteRecursivelyDirs(file)) {
+			return true;
+		}
+		Log.e(LOG_TAG, "Failed to delete directory: " + file.getAbsolutePath());
+		return false;
+	}
+
+	/**
 	 * Recursively remove file or directory with children.
 	 * @param file File to remove
 	 */
-	public static boolean deleteRecursivelyDirs(File file) {
+	private static boolean deleteRecursivelyDirs(File file) {
 		boolean ok = true;
 		if (file != null ) {
 			if (file.exists()) {

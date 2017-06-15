@@ -31,6 +31,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.Arrays;
 
@@ -85,6 +88,25 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 	private int action = ACTION_UNKNOWN;
 
 	private boolean isFavorite = false;
+
+	/** Glide exception listener */
+	private RequestListener<String, GlideDrawable> requestListener = new RequestListener<String, GlideDrawable>() {
+		@Override
+		public boolean onException(Exception e, String model,
+											Target<GlideDrawable> target, boolean isFirstResource) {
+
+			//When error rise alert icon will be actual size not scaled in imageView
+			ivImage.setScaleType(ImageView.ScaleType.CENTER);
+			return false;
+		}
+
+		@Override
+		public boolean onResourceReady(GlideDrawable resource, String model,
+												 Target<GlideDrawable> target, boolean
+														 isFromMemoryCache, boolean isFirstResource) {
+			return false;
+		}
+	};
 
 
 	@Override
@@ -221,7 +243,12 @@ public class ExerciseDetailsActivity extends AppCompatActivity implements IExerc
 	@Override
 	public void setImage(String path) {
 		Timber.v("Path = " + path);
-		Glide.with(getApplicationContext()).load(path).fitCenter().into(ivImage);
+		ivImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+		Glide.with(getApplicationContext())
+				.load(path)
+				.error(R.drawable.alert_circle)
+				.listener(requestListener)
+				.into(ivImage);
 	}
 
 	@Override

@@ -467,6 +467,7 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 								.load(mShowingData.get(posGroup).getImagePath())
 								.thumbnail(0.5f)
 								.crossFade()
+								.error(R.drawable.alert_circle)
 								.into(groupViewHolder.ivImage);
 					}
 					break;
@@ -499,6 +500,7 @@ public class ExercisesFragment extends Fragment implements IExercisesView {
 								.load(mShowingData.get(posChild).getImagePath())
 								.thumbnail(0.5f)
 								.crossFade()
+								.error(R.drawable.alert_circle)
 								.into(childViewHolder.ivImage);
 					}
 					break;
