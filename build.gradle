@@ -6,7 +6,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:2.3.2'
+		classpath 'com.android.tools.build:gradle:2.3.3'
 //		classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.0'
 		classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
 		classpath 'com.novoda:gradle-android-command-plugin:1.5.0'
@@ -21,6 +21,9 @@ buildscript {
 allprojects {
 	repositories {
 		jcenter()
+		maven {
+			url "https://maven.google.com"
+		}
 	}
 }
 
@@ -52,4 +55,6 @@ ext {
 	timberVersion = '4.5.1'
 	butterKnifeVersion = '8.5.1'
 	dagger2Version = '2.9'
+	archLifecycleVersion = "1.0.0-alpha1"
+	archRoomVersion = "1.0.0-alpha1"
 }
