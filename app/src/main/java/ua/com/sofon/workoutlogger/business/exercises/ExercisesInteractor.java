@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import rx.Single;
+import io.reactivex.Single;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.IExercisesRepository;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ListItem;

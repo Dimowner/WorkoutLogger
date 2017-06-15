@@ -18,9 +18,8 @@ package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
 
-import rx.Single;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 import ua.com.sofon.workoutlogger.IBaseView;
 import ua.com.sofon.workoutlogger.business.exercises.IExercisesInteractor;
@@ -36,7 +35,7 @@ public class ExercisesPresenter implements IExercisesPresenter {
 
 	private IExercisesView iAllExercisesView;
 
-	private CompositeSubscription compositeSubscription = new CompositeSubscription();
+//	private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
 
 	public ExercisesPresenter(IExercisesInteractor iExercisesInteractor) {

@@ -16,7 +16,7 @@
 
 package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
-import rx.Single;
+import io.reactivex.Single;
 import ua.com.sofon.workoutlogger.IBasePresenter;
 
 /**

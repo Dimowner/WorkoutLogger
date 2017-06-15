@@ -16,7 +16,7 @@
 
 package ua.com.sofon.workoutlogger.business.exercises;
 
-import rx.Single;
+import io.reactivex.Single;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 
 /**

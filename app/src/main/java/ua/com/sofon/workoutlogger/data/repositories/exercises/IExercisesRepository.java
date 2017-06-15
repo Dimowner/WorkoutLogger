@@ -18,7 +18,7 @@ package ua.com.sofon.workoutlogger.data.repositories.exercises;
 
 import java.util.List;
 
-import rx.Single;
+import io.reactivex.Single;
 import ua.com.sofon.workoutlogger.data.network.models.ExerciseModel;
 
 /**

@@ -44,7 +44,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 import ua.com.sofon.workoutlogger.R;
 import ua.com.sofon.workoutlogger.WLApplication;

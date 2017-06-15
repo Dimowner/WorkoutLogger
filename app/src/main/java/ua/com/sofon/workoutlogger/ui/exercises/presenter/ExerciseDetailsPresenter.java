@@ -17,9 +17,8 @@
 package ua.com.sofon.workoutlogger.ui.exercises.presenter;
 
 import android.support.annotation.NonNull;
-import java.util.Arrays;
 
-import rx.android.schedulers.AndroidSchedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import ua.com.sofon.workoutlogger.IBaseView;
 import ua.com.sofon.workoutlogger.business.exercises.IExerciseDetailsInteractor;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;

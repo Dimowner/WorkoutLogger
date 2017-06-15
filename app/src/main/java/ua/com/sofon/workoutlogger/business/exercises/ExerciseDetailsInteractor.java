@@ -18,8 +18,8 @@ package ua.com.sofon.workoutlogger.business.exercises;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Single;
-import rx.schedulers.Schedulers;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 import ua.com.sofon.workoutlogger.data.repositories.exercises.IExercisesRepository;
 import ua.com.sofon.workoutlogger.ui.exercises.models.ExerciseDataModel;
 
